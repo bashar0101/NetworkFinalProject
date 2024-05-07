@@ -10,6 +10,11 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -30,6 +35,10 @@ public class Server extends Thread {
     DataOutputStream out;
 
     // database information 
+    public String url = "jdbc:mysql://localhost:3306/cmpy";
+    public String username = "root";
+    public String password = "20142007";
+
     Server() {
 
     }
@@ -68,9 +77,38 @@ public class Server extends Thread {
             String message = in.readUTF();
             System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
             System.out.println(message);
+            // we will split the data came from the client
+            String[] data = message.split(",");
+            String email = data[0];
+            String passwordData = data[1];
 
             // we will check the sign in data in the database
-            
+            try {
+                System.out.println("We are here2");
+                Connection connection = DriverManager.getConnection(url, username, password);
+                String sql = "SELECT * FROM clients WHERE email = ? AND password = ?";
+                PreparedStatement statement = connection.prepareStatement(sql);
+                statement.setString(1, email);
+                statement.setString(2, passwordData);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    try {
+                        System.out.println("user in the database");
+                        out.writeUTF("true");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } else {
+                    try {
+                        System.out.println("user not in the database");
+                        out.writeUTF("false");
+                    } catch (IOException ex) {
+                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                }
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
 
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
