@@ -26,10 +26,10 @@ import java.util.logging.Logger;
 public class Server extends Thread {
 
     boolean isListening = false;
-    int port;
+    static int port;
     ServerSocket serverSocket;
     private ArrayList<Client> clients;
-    InetAddress ipAddress;
+    static InetAddress ipAddress;
 
     DataInputStream in;
     DataOutputStream out;
@@ -84,24 +84,36 @@ public class Server extends Thread {
 
             // we will check the sign in data in the database
             try {
-                System.out.println("We are here2");
                 Connection connection = DriverManager.getConnection(url, username, password);
-                String sql = "SELECT * FROM clients WHERE email = ? AND password = ?";
+                String sql = "SELECT * FROM clients WHERE email = ?";
                 PreparedStatement statement = connection.prepareStatement(sql);
                 statement.setString(1, email);
-                statement.setString(2, passwordData);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    try {
-                        System.out.println("user in the database");
-                        out.writeUTF("true");
-                    } catch (IOException ex) {
-                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                    // User found, check password
+                    String storedPassword = resultSet.getString("password");
+                    if (storedPassword.equals(passwordData)) {
+                        // Passwords match
+                        try {
+                            System.out.println("User in the database");
+                            out.writeUTF("11");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        // Passwords don't match
+                        try {
+                            System.out.println("Wrong password");
+                            out.writeUTF("10");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        }
                     }
                 } else {
+                    // User not found
                     try {
-                        System.out.println("user not in the database");
-                        out.writeUTF("false");
+                        System.out.println("No email registered");
+                        out.writeUTF("0");
                     } catch (IOException ex) {
                         Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -109,6 +121,31 @@ public class Server extends Thread {
             } catch (SQLException e) {
                 System.out.println(e.getMessage());
             }
+//            try {
+//                Connection connection = DriverManager.getConnection(url, username, password);
+//                String sql = "SELECT * FROM clients WHERE email = ? AND password = ?";
+//                PreparedStatement statement = connection.prepareStatement(sql);
+//                statement.setString(1, email);
+//                statement.setString(2, passwordData);
+//                ResultSet resultSet = statement.executeQuery();
+//                if (resultSet.next()) {
+//                    try {
+//                        System.out.println("user in the database");
+//                        out.writeUTF("true");
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                } else {
+//                    try {
+//                        System.out.println("user not in the database");
+//                        out.writeUTF("false");
+//                    } catch (IOException ex) {
+//                        Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+//                    }
+//                }
+//            } catch (SQLException e) {
+//                System.out.println(e.getMessage());
+//            }
 
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);

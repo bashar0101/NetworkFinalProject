@@ -20,6 +20,7 @@ public class Client extends Thread {
     // data sending part
     // first we wnat to send the sign in data to check in the database
     static String siginInData = "";
+    String checkDBServerResult = "";
     ///
 
     Socket socket;
@@ -63,6 +64,8 @@ public class Client extends Thread {
             siginInData = SignInFrm.data;
             out.writeUTF(siginInData);
             System.out.println("data send to server is :" + siginInData);
+            checkDBServerResult = in.readUTF();
+            System.out.println("result of checking in db : " + checkDBServerResult);
 
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);

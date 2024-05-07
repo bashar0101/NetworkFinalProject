@@ -4,6 +4,8 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author basha
@@ -24,6 +26,8 @@ public class SignInFrm extends javax.swing.JFrame {
         initComponents();
 //        serverPort = server.port;
 //        serverIp = server.ipAddress.toString();
+        // we need to get the ip of the server and its port
+
         client = new Client("localhost", 222);
         client.ConnectToServer();
 //        client.Listen();
@@ -103,6 +107,11 @@ public class SignInFrm extends javax.swing.JFrame {
         data += ",";
         data += passwordTxt.getText();
         client.sendDataToServer();
+        System.out.println("here test");
+        if (client.checkDBServerResult.equals("true")) {
+        } else if (client.checkDBServerResult.equals("false")) {
+            JOptionPane.showMessageDialog(this,"No user in this name in the database...");
+        }
     }//GEN-LAST:event_signInBtnActionPerformed
 
     /**
