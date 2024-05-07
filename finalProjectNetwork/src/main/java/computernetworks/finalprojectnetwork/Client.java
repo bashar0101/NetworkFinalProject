@@ -19,7 +19,7 @@ public class Client extends Thread {
 
     // data sending part
     // first we wnat to send the sign in data to check in the database
-    static String siginInData = "";
+//    static String siginInData = "";
     String checkDBServerResult = "";
     ///
 
@@ -53,6 +53,30 @@ public class Client extends Thread {
         return true;
     }
 
+    public void sendDataToserverToCreateNewAccount(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            checkDBServerResult = in.readUTF();
+            System.out.println("Server sasy : " + checkDBServerResult);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void sendDataToCheckInDataBase(String data) {
+        try {
+            data = SignInFrm.data;
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            checkDBServerResult = in.readUTF();
+            System.out.println("result of checking in db : " + checkDBServerResult);
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void sendDataToServer() {
         this.isListening = true;
         this.start();
@@ -60,15 +84,8 @@ public class Client extends Thread {
 
     @Override
     public void run() {
-        try {
-            siginInData = SignInFrm.data;
-            out.writeUTF(siginInData);
-            System.out.println("data send to server is :" + siginInData);
-            checkDBServerResult = in.readUTF();
-            System.out.println("result of checking in db : " + checkDBServerResult);
+        while (isListening) {
 
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 

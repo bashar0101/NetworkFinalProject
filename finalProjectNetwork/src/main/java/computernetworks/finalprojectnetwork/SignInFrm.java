@@ -17,10 +17,10 @@ public class SignInFrm extends javax.swing.JFrame {
      */
     int serverPort;
     String serverIp;
-    Client client;
+    public static Client client;
     Server server = ServerFrm.server;
 
-    public static String data;
+    static String data;
 
     public SignInFrm() {
         initComponents();
@@ -106,11 +106,35 @@ public class SignInFrm extends javax.swing.JFrame {
         data = emailtxt.getText();
         data += ",";
         data += passwordTxt.getText();
-        client.sendDataToServer();
-        System.out.println("here test");
-        if (client.checkDBServerResult.equals("true")) {
-        } else if (client.checkDBServerResult.equals("false")) {
-            JOptionPane.showMessageDialog(this,"No user in this name in the database...");
+        //client.sendDataToServer();
+        client.sendDataToCheckInDataBase(data);
+        server.CheckData();
+        if (client.checkDBServerResult.equals("11")) {
+            System.out.println("email and passowrd true");
+            // go to our main page 
+        } else if (client.checkDBServerResult.equals("10")) {
+            System.out.println("email true but password wrong");
+            JOptionPane.showMessageDialog(this, "");
+
+        } else if (client.checkDBServerResult.equals("0")) {
+            // would you like to create account 
+            // if yes 
+            // open sign up page 
+            //if no close the client 
+            int i = JOptionPane.showConfirmDialog(this, "Would you like to create account?");
+            if (i == JOptionPane.YES_OPTION) {
+                //
+                System.out.println("we are in the sign up frame...");
+                SignUpFrm signUp = new SignUpFrm();
+                signUp.setVisible(true);
+                this.setVisible(false);
+
+            }
+            if (i == JOptionPane.NO_OPTION) {
+                client.disconnect();
+            }
+            System.out.println("email not found in the database create account");
+
         }
     }//GEN-LAST:event_signInBtnActionPerformed
 
