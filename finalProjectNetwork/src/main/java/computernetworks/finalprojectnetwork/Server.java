@@ -29,6 +29,7 @@ public class Server extends Thread {
     DataInputStream in;
     DataOutputStream out;
 
+    // database information 
     Server() {
 
     }
@@ -67,6 +68,10 @@ public class Server extends Thread {
             String message = in.readUTF();
             System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
             System.out.println(message);
+
+            // we will check the sign in data in the database
+            
+
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
