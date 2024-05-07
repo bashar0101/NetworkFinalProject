@@ -61,6 +61,12 @@ public class Server extends Thread {
             out = new DataOutputStream(clientSocket.getOutputStream());
             Client client = new Client(ipAddress.toString(), port);
             clients.add(client);
+            String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
+            ServerFrm.clientsListModel.addElement(cinfo);
+            // get signin info
+            String message = in.readUTF();
+            System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
+            System.out.println(message);
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
