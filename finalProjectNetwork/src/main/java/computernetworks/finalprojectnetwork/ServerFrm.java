@@ -105,7 +105,6 @@ public class ServerFrm extends javax.swing.JFrame {
 
     private void startServerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startServerBtnActionPerformed
         // TODO add your handling code here:
-
         int port = Integer.parseInt(portTxt.getText());
         server = new Server();
         server.Create(port);

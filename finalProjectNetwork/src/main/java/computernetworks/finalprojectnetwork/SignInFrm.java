@@ -108,7 +108,7 @@ public class SignInFrm extends javax.swing.JFrame {
         data += passwordTxt.getText();
         //client.sendDataToServer();
         client.sendDataToCheckInDataBase(data);
-        server.CheckData();
+//        server.CheckData();
         if (client.checkDBServerResult.equals("11")) {
             System.out.println("email and passowrd true");
             // go to our main page 
