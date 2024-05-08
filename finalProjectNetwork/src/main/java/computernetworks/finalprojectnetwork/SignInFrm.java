@@ -20,7 +20,7 @@ public class SignInFrm extends javax.swing.JFrame {
     public static Client client;
     Server server = ServerFrm.server;
 
-    static String data;
+    static String data = "";
 
     public SignInFrm() {
         initComponents();
