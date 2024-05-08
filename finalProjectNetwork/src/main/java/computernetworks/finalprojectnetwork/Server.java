@@ -58,8 +58,6 @@ public class Server extends Thread {
         return true;
     }
 
-   
-
     public void Listen() {
         this.isListening = true;
         this.start();
@@ -83,6 +81,9 @@ public class Server extends Thread {
                 // we should siplt the sign in and the sign uup to seprite threads
                 /// /////////////////////////
                 String message = in.readUTF();
+                /// this is the messsage from the client we will chek like four things
+                // 1 if the message starts with one it means for sign in
+
                 System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
                 System.out.println(message);
                 // we will split the data came from the client
@@ -90,46 +91,53 @@ public class Server extends Thread {
                 String[] data = message.split(",");
                 String email = data[0];
                 String passwordData = data[1];
-                
-                // we will check the sign in data in the database
-                try {
-                    Connection connection = DriverManager.getConnection(url, username, password);
-                    String sql = "SELECT * FROM clients WHERE email = ?";
-                    PreparedStatement statement = connection.prepareStatement(sql);
-                    statement.setString(1, email);
-                    ResultSet resultSet = statement.executeQuery();
-                    if (resultSet.next()) {
-                        // User found, check password
-                        String storedPassword = resultSet.getString("password");
-                        if (storedPassword.equals(passwordData)) {
-                            // Passwords match
-                            try {
-                                System.out.println("User in the database");
-                                out.writeUTF("11");
-                            } catch (IOException ex) {
-                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+
+                // sign in section 
+                if (message == "") {
+                    // we will check the sign in data in the database
+                    try {
+                        Connection connection = DriverManager.getConnection(url, username, password);
+                        String sql = "SELECT * FROM clients WHERE email = ?";
+                        PreparedStatement statement = connection.prepareStatement(sql);
+                        statement.setString(1, email);
+                        ResultSet resultSet = statement.executeQuery();
+                        if (resultSet.next()) {
+                            // User found, check password
+                            String storedPassword = resultSet.getString("password");
+                            if (storedPassword.equals(passwordData)) {
+                                // Passwords match
+                                try {
+                                    System.out.println("User in the database");
+                                    out.writeUTF("11");
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            } else {
+                                // Passwords don't match
+                                try {
+                                    System.out.println("User in the database but wrong password");
+                                    out.writeUTF("10");
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             }
                         } else {
-                            // Passwords don't match
+                            // User not found
                             try {
-                                System.out.println("User in the database but wrong password");
-                                out.writeUTF("10");
+                                System.out.println("No email registered");
+                                out.writeUTF("0");
                             } catch (IOException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         }
-                    } else {
-                        // User not found
-                        try {
-                            System.out.println("No email registered");
-                            out.writeUTF("0");
-                        } catch (IOException ex) {
-                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
                     }
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
+
                 }
+                
+                // sign ups section 
+                
                 String SignUpmessage = in.readUTF();
                 String[] signupdata = SignUpmessage.split(",");
                 String name = signupdata[0];
