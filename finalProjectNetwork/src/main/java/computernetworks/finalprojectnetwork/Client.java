@@ -85,8 +85,15 @@ public class Client extends Thread {
     @Override
     public void run() {
         while (isListening) {
-            
+            try {
+//                out.writeUTF(SignInFrm.data);
+//                System.out.println("data send to server is :" + SignInFrm.data);
+                checkDBServerResult = in.readUTF();
+                System.out.println("Server sasy : " + checkDBServerResult);
 
+            } catch (IOException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

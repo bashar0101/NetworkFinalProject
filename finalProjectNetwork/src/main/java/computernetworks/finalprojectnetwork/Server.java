@@ -74,6 +74,7 @@ public class Server extends Thread {
                 out = new DataOutputStream(clientSocket.getOutputStream());
                 Client client = new Client(ipAddress.toString(), port);
                 clients.add(client);
+                client.sendDataToServer();
                 String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
                 ServerFrm.clientsListModel.addElement(cinfo);
                 // get signin info
