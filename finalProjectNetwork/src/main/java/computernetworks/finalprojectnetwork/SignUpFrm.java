@@ -46,6 +46,7 @@ public class SignUpFrm extends javax.swing.JFrame {
         signUpButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Sign Up");
 
         jLabel1.setText("Name");
 
@@ -132,18 +133,21 @@ public class SignUpFrm extends javax.swing.JFrame {
         signUpdata += "2";
         signUpdata += ",";
         String name = nameTxt.getText();
+        client.clientName = name;
         signUpdata += name;
         signUpdata += ",";
         String lastname = lastNameTxt.getText();
+        client.clientLastName = lastname;
         signUpdata += lastname;
         signUpdata += ",";
         String email = emailTxt.getText();
+        client.cleintEmail = email;
         signUpdata += email;
         signUpdata += ",";
-        String password = Arrays.toString(passwordTxt.getPassword());
+        String password = new String(passwordTxt.getPassword());
         signUpdata += password;
         signUpdata += ",";
-        String confirmPassword = Arrays.toString(confirmPasswordTxt.getPassword());
+        String confirmPassword = new String(confirmPasswordTxt.getPassword());
         if ("".equals(name) || "".equals(lastname) || "".equals(email) || "".equals(password) || "".equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "fill all the fields");
         } else {
@@ -152,8 +156,10 @@ public class SignUpFrm extends javax.swing.JFrame {
             } else {
                 client.sendDataToserverToCreateNewAccount(signUpdata);
                 this.setVisible(false);
-                MainFrm minFrm = new MainFrm();
-                minFrm.setVisible(true);
+                SignInFrm signIn = new SignInFrm();
+                signIn.setVisible(true);
+//                MainFrm mainFrm = new MainFrm();
+//                mainFrm.setVisible(true);
             }
         }
 

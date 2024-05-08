@@ -33,6 +33,10 @@ public class Client extends Thread {
     int port;
     boolean isListening = false;
 
+    public String clientName;
+    public String clientLastName;
+    public String cleintEmail;
+
     public Client(String serverIp, int port) {
         this.serverIp = serverIp;
         this.port = port;
@@ -93,7 +97,7 @@ public class Client extends Thread {
 
     }
 
-    public void sendDataToServer() {
+    public void Listen() {
         this.isListening = true;
         this.start();
     }

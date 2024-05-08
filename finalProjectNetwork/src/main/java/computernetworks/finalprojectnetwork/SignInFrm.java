@@ -52,6 +52,7 @@ public class SignInFrm extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Sign In");
 
         jLabel1.setText("Email");
 
@@ -124,23 +125,38 @@ public class SignInFrm extends javax.swing.JFrame {
 
     private void signInBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInBtnActionPerformed
         // TODO add your handling code here:
+//        if (this.getDefaultCloseOperation() == this.EXIT_ON_CLOSE) {
+//            data += "3";
+//            client.disconnectClientFromServer("3");
+//            this.setVisible(false);
+//        }
         data += "1";
         data += ",";
         data += emailtxt.getText();
         data += ",";
         data += passwordTxt.getText();
-        //client.sendDataToServer();
+        // we will send the sign in data to server to check if the user is in the DB
         client.sendDataToCheckInDataBase(data);
-        if (client.checkDBServerResult.equals("11")) {
+        // this is the respons from sever of the client request
+        String[] dataFromServer = client.checkDBServerResult.split(",");
+        String check = dataFromServer[0];
+
+        if (check.equals("11")) {
             // if email true and password true we know from the server message (11) , go to main page of the program
+            client.clientName = dataFromServer[1];
+            client.clientLastName = dataFromServer[2];
+            client.cleintEmail = dataFromServer[3];
             System.out.println("email and passowrd true");
+            MainFrm mainFrm = new MainFrm();
+            this.setVisible(false);
+            mainFrm.setVisible(true);
             // go to our main page 
-        } else if (client.checkDBServerResult.equals("10")) {
+        } else if (check.equals("10")) {
             // if eamil true and password wrong server send (10) , we can reset password for this  
             System.out.println("email true but password wrong");
             JOptionPane.showMessageDialog(this, "reset password");
 
-        } else if (client.checkDBServerResult.equals("0")) {
+        } else if (check.equals("0")) {
             // becuse no email registerd in the database server send (0), we can create a new account or cancle
             System.out.println("Email not found");
             int i = JOptionPane.showConfirmDialog(this, "Would you like to create account?");
@@ -152,14 +168,15 @@ public class SignInFrm extends javax.swing.JFrame {
                 this.setVisible(false);
 
             }
-            if (i == JOptionPane.NO_OPTION) {
-                client.disconnectClientFromServer("removeClientFromServer");
+            if (i == JOptionPane.NO_OPTION || this.getDefaultCloseOperation() == this.EXIT_ON_CLOSE) {
+//                client.disconnectClientFromServer("3");
                 this.setVisible(false);
                 client.disconnect();
 
             }
 
         }
+
     }//GEN-LAST:event_signInBtnActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed

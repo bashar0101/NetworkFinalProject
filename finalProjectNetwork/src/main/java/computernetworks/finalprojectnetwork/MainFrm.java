@@ -4,6 +4,8 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import javax.swing.DefaultListModel;
+
 /**
  *
  * @author basha
@@ -13,8 +15,17 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
+    public static DefaultListModel projectListModel = new DefaultListModel();
+
+    Client client;
+
     public MainFrm() {
         initComponents();
+        clientProjectsList.setModel(projectListModel);
+        client = SignInFrm.client;
+        UserNameSurname.setText("User : " + client.clientName + " " + client.clientLastName);
+        UserEmail.setText("User Email : " + client.cleintEmail);
+
     }
 
     /**
@@ -27,32 +38,51 @@ public class MainFrm extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jList1 = new javax.swing.JList<>();
+        clientProjectsList = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+        UserNameSurname = new javax.swing.JLabel();
+        UserEmail = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Project Managment");
 
-        jList1.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
-        jScrollPane1.setViewportView(jList1);
+        jScrollPane1.setViewportView(clientProjectsList);
+
+        jLabel1.setText("My Projects");
+
+        UserNameSurname.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        UserNameSurname.setText("jLabel2");
+
+        UserEmail.setFont(new java.awt.Font("Segoe UI Black", 1, 18)); // NOI18N
+        UserEmail.setText("jLabel2");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(269, Short.MAX_VALUE)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 117, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(39, 39, 39))
+                .addGap(51, 51, 51)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(UserNameSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(UserEmail))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 273, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(65, 65, 65))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(78, 78, 78)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(79, Short.MAX_VALUE))
+                .addGap(71, 71, 71)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(UserNameSurname))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 217, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(UserEmail))
+                .addContainerGap(103, Short.MAX_VALUE))
         );
 
         pack();
@@ -94,7 +124,10 @@ public class MainFrm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JList<String> jList1;
+    private javax.swing.JLabel UserEmail;
+    private javax.swing.JLabel UserNameSurname;
+    private javax.swing.JList<String> clientProjectsList;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

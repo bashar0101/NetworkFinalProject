@@ -100,7 +100,14 @@ public class Server extends Thread {
                             // Passwords match
                             try {
                                 System.out.println("User in the database");
-                                out.writeUTF("11");
+                                /* *****  */
+                                String nameTosend = resultSet.getString("name");
+                                String lastNameToSend = resultSet.getString("surname");
+                                String emailToSend = resultSet.getString("email");
+                                /* *****  */
+                                String respone = "11";
+                                respone += "," + nameTosend + "," + lastNameToSend + "," + emailToSend;
+                                out.writeUTF(respone);
                             } catch (IOException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                             }
@@ -118,15 +125,15 @@ public class Server extends Thread {
                         try {
                             System.out.println("No email registered");
                             out.writeUTF("0");
-                            if (in.readUTF().equals("removeClientFromServer")) {
-                                out.writeUTF("client" + client.port + " disconnected form the server");
-                                this.clients.remove(client);
-                                ServerFrm.clientsListModel.removeAllElements();
-                                for (Client sClient : clients) {
-                                    String newcinfo = sClient.socket.getInetAddress().toString() + ":" + sClient.socket.getPort();
-                                    ServerFrm.clientsListModel.addElement(newcinfo);
-                                }
-                            }
+//                            if (in.readUTF().equals("3")) {
+//                                out.writeUTF("client" + client.port + " disconnected form the server");
+//                                this.clients.remove(client);
+//                                ServerFrm.clientsListModel.removeAllElements();
+//                                for (Client sClient : clients) {
+//                                    String newcinfo = sClient.socket.getInetAddress().toString() + ":" + sClient.socket.getPort();
+//                                    ServerFrm.clientsListModel.addElement(newcinfo);
+//                                }
+//                            }
                         } catch (IOException ex) {
                             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                         }
@@ -187,6 +194,16 @@ public class Server extends Thread {
 
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
+                }
+                // if the user closed the sign in frame
+                if (operationCode.equals("3")) {
+                    out.writeUTF("client" + client.port + " disconnected form the server");
+                    this.clients.remove(client);
+                    ServerFrm.clientsListModel.removeAllElements();
+                    for (Client sClient : clients) {
+                        String newcinfo = sClient.socket.getInetAddress().toString() + ":" + sClient.socket.getPort();
+                        ServerFrm.clientsListModel.addElement(newcinfo);
+                    }
                 }
             }
 

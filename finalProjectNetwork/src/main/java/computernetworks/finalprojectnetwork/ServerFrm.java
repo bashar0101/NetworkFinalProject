@@ -3,6 +3,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package computernetworks.finalprojectnetwork;
+
 import javax.swing.DefaultListModel;
 
 /**
@@ -16,7 +17,7 @@ public class ServerFrm extends javax.swing.JFrame {
      */
     public static DefaultListModel clientsListModel = new DefaultListModel();
     public static Server server;
-    
+
     public ServerFrm() {
         initComponents();
         connectedClientsList.setModel(clientsListModel);
@@ -41,6 +42,7 @@ public class ServerFrm extends javax.swing.JFrame {
         stopServerBtn = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Server");
 
         jLabel1.setText("Port");
 
@@ -117,7 +119,7 @@ public class ServerFrm extends javax.swing.JFrame {
         // TODO add your handling code here:
         this.server.Stop();
         this.setVisible(false);
-        
+
     }//GEN-LAST:event_stopServerBtnActionPerformed
 
     /**
