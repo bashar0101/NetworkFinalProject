@@ -58,6 +58,137 @@ public class Server extends Thread {
         return true;
     }
 
+    private void handleClient(Socket clientSocket) {
+        try {
+            DataInputStream in = new DataInputStream(clientSocket.getInputStream());
+            DataOutputStream out = new DataOutputStream(clientSocket.getOutputStream());
+            // Your existing client handling logic goes here
+            // Remember to close the streams and socket when done with the client
+            in = new DataInputStream(clientSocket.getInputStream());
+            out = new DataOutputStream(clientSocket.getOutputStream());
+            Client client = new Client(ipAddress.toString(), port);
+            clients.add(client);
+            String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
+            ServerFrm.clientsListModel.addElement(cinfo);
+            // get signin info
+            /// ////////////////////////
+            // we should siplt the sign in and the sign uup to seprite threads
+            /// /////////////////////////
+            String clientMessage = in.readUTF();
+            /// this is the messsage from the client we will chek like four things
+            // 1 if the message starts with one it means for sign in
+
+            System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
+            System.out.println(clientMessage);
+            // we will split the data came from the client
+
+            String[] data = clientMessage.split(",");
+            String operationCode = data[0];
+            // sign in section  1 means sigin in
+            if (operationCode.equals("1")) {
+                String email = data[1];
+                String passwordData = data[2];
+
+                // we will check the sign in data in the database
+                try {
+                    Connection connection = DriverManager.getConnection(url, username, password);
+                    String sql = "SELECT * FROM clients WHERE email = ?";
+                    PreparedStatement statement = connection.prepareStatement(sql);
+                    statement.setString(1, email);
+                    ResultSet resultSet = statement.executeQuery();
+                    if (resultSet.next()) {
+                        // User found, check password
+                        String storedPassword = resultSet.getString("password");
+                        if (storedPassword.equals(passwordData)) {
+                            // Passwords match
+                            try {
+                                System.out.println("User in the database");
+                                out.writeUTF("11");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            // Passwords don't match
+                            try {
+                                System.out.println("User in the database but wrong password");
+                                out.writeUTF("10");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    } else {
+                        // User not found
+                        try {
+                            System.out.println("No email registered");
+                            out.writeUTF("0");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+
+            }
+            // sign ups section 
+            if (operationCode.equals("2")) {
+                String name = data[1];
+                String lastName = data[2];
+                String email = data[3];
+                String passwordData = data[4];
+                try {
+                    Connection connection = DriverManager.getConnection(url, username, password);
+                    String checkIfExistsSql = "SELECT COUNT(*) AS count FROM clients WHERE email = ?";
+                    PreparedStatement checkIfExistsStatement = connection.prepareStatement(checkIfExistsSql);
+                    checkIfExistsStatement.setString(1, email);
+                    ResultSet resultSet = checkIfExistsStatement.executeQuery();
+                    resultSet.next();
+                    int count = resultSet.getInt("count");
+                    if (count > 0) {
+                        // Email already exists
+                        try {
+                            System.out.println("Email already exists");
+                            out.writeUTF("email already exists");
+                        } catch (IOException ex) {
+                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                        }
+                    } else {
+                        // Email doesn't exist, proceed with insertion
+                        String insertSql = "INSERT INTO clients (name, surname, email, password) VALUES (?, ?, ?, ?)";
+                        PreparedStatement insertStatement = connection.prepareStatement(insertSql);
+                        insertStatement.setString(1, name);
+                        insertStatement.setString(2, lastName);
+                        insertStatement.setString(3, email);
+                        insertStatement.setString(4, passwordData);
+                        int rowsAffected = insertStatement.executeUpdate();
+                        if (rowsAffected > 0) {
+                            try {
+                                System.out.println("Data inserted successfully");
+                                out.writeUTF("data inserted");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        } else {
+                            try {
+                                System.out.println("Insertion failed");
+                                out.writeUTF("insertion failed");
+                            } catch (IOException ex) {
+                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }
+                    }
+                } catch (SQLException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+//                if () {
+//                }
+
+        } catch (IOException ex) {
+            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void Listen() {
         this.isListening = true;
         this.start();
@@ -70,127 +201,8 @@ public class Server extends Thread {
                 System.out.println("server waiting for clients...");
                 Socket clientSocket = serverSocket.accept();//blocking
                 System.out.println("client connected to server...");
-                in = new DataInputStream(clientSocket.getInputStream());
-                out = new DataOutputStream(clientSocket.getOutputStream());
-                Client client = new Client(ipAddress.toString(), port);
-                clients.add(client);
-                client.sendDataToServer();
-                String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
-                ServerFrm.clientsListModel.addElement(cinfo);
-                // get signin info
-                /// ////////////////////////
-                // we should siplt the sign in and the sign uup to seprite threads
-                /// /////////////////////////
-                String clientMessage = in.readUTF();
-                /// this is the messsage from the client we will chek like four things
-                // 1 if the message starts with one it means for sign in
-
-                System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
-                System.out.println(clientMessage);
-                // we will split the data came from the client
-
-                String[] data = clientMessage.split(",");
-                String operationCode = data[0];
-                // sign in section  1 means sigin in
-                if (operationCode.equals("1")) {
-                    String email = data[1];
-                    String passwordData = data[2];
-
-                    // we will check the sign in data in the database
-                    try {
-                        Connection connection = DriverManager.getConnection(url, username, password);
-                        String sql = "SELECT * FROM clients WHERE email = ?";
-                        PreparedStatement statement = connection.prepareStatement(sql);
-                        statement.setString(1, email);
-                        ResultSet resultSet = statement.executeQuery();
-                        if (resultSet.next()) {
-                            // User found, check password
-                            String storedPassword = resultSet.getString("password");
-                            if (storedPassword.equals(passwordData)) {
-                                // Passwords match
-                                try {
-                                    System.out.println("User in the database");
-                                    out.writeUTF("11");
-                                } catch (IOException ex) {
-                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            } else {
-                                // Passwords don't match
-                                try {
-                                    System.out.println("User in the database but wrong password");
-                                    out.writeUTF("10");
-                                } catch (IOException ex) {
-                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                        } else {
-                            // User not found
-                            try {
-                                System.out.println("No email registered");
-                                out.writeUTF("0");
-                            } catch (IOException ex) {
-                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        }
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-
-                }
-                // sign ups section 
-                if (operationCode.equals("2")) {
-                    String name = data[1];
-                    String lastName = data[2];
-                    String email = data[3];
-                    String passwordData = data[4];
-                    try {
-                        Connection connection = DriverManager.getConnection(url, username, password);
-                        String checkIfExistsSql = "SELECT COUNT(*) AS count FROM clients WHERE email = ?";
-                        PreparedStatement checkIfExistsStatement = connection.prepareStatement(checkIfExistsSql);
-                        checkIfExistsStatement.setString(1, email);
-                        ResultSet resultSet = checkIfExistsStatement.executeQuery();
-                        resultSet.next();
-                        int count = resultSet.getInt("count");
-                        if (count > 0) {
-                            // Email already exists
-                            try {
-                                System.out.println("Email already exists");
-                                out.writeUTF("email already exists");
-                            } catch (IOException ex) {
-                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                            }
-                        } else {
-                            // Email doesn't exist, proceed with insertion
-                            String insertSql = "INSERT INTO clients (name, surname, email, password) VALUES (?, ?, ?, ?)";
-                            PreparedStatement insertStatement = connection.prepareStatement(insertSql);
-                            insertStatement.setString(1, name);
-                            insertStatement.setString(2, lastName);
-                            insertStatement.setString(3, email);
-                            insertStatement.setString(4, passwordData);
-                            int rowsAffected = insertStatement.executeUpdate();
-                            if (rowsAffected > 0) {
-                                try {
-                                    System.out.println("Data inserted successfully");
-                                    out.writeUTF("data inserted");
-                                } catch (IOException ex) {
-                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            } else {
-                                try {
-                                    System.out.println("Insertion failed");
-                                    out.writeUTF("insertion failed");
-                                } catch (IOException ex) {
-                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            }
-                        }
-                    } catch (SQLException e) {
-                        System.out.println(e.getMessage());
-                    }
-                }
-//                if () {
-//                }
-
+                // we will handle all the clients when connect to server in the same time
+                new Thread(() -> handleClient(clientSocket)).start();
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
