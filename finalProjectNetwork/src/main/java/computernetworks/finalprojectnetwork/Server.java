@@ -58,22 +58,7 @@ public class Server extends Thread {
         return true;
     }
 
-    public void ListenForClients() {
-        this.isListening = true;
-        while (isListening) {
-            try {
-                System.out.println("server waiting for clients...");
-                Socket clientSocket = serverSocket.accept();//blocking
-                System.out.println("client connected to server...");
-
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
-                clientHandler.start();
-            } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-    }
+   
 
     public void Listen() {
         this.isListening = true;
@@ -105,7 +90,7 @@ public class Server extends Thread {
                 String[] data = message.split(",");
                 String email = data[0];
                 String passwordData = data[1];
-
+                
                 // we will check the sign in data in the database
                 try {
                     Connection connection = DriverManager.getConnection(url, username, password);
@@ -224,55 +209,72 @@ public class Server extends Thread {
 
 }
 
-class ClientHandler extends Thread {
-
-    private Socket clientSocket;
-    private DataInputStream in;
-    private DataOutputStream out;
-    ArrayList<Client> clients;
-
-    public ClientHandler(Socket clientSocket) {
-        this.clientSocket = clientSocket;
-        clients = new ArrayList<>();
-    }
-
-    @Override
-    public void run() {
-        try {
-            // Initialize input and output streams
-            in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
-            System.out.println("test is here");
-            Client client = new Client(ipAddress.toString(), port);
-            clients.add(client);
-            String cinfo = this.clientSocket.getInetAddress().toString() + ":" + this.clientSocket.getPort();
-            ServerFrm.clientsListModel.addElement(cinfo);
-            // Handle client requests here
-            // For example, you can read data from the client and send responses
-            // Example:
-//            String message = in.readUTF();
-//            System.out.println("Message from client " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-//            System.out.println(message);
-            // Handle the message...
-
-        } catch (IOException ex) {
-            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-        } finally {
-            // Close the connection
-            try {
-                if (in != null) {
-                    in.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-                if (clientSocket != null) {
-                    clientSocket.close();
-                }
-            } catch (IOException ex) {
-                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-}
+// public void ListenForClients() {
+//        this.isListening = true;
+//        while (isListening) {
+//            try {
+//                System.out.println("server waiting for clients...");
+//                Socket clientSocket = serverSocket.accept();//blocking
+//                System.out.println("client connected to server...");
+//
+//                ClientHandler clientHandler = new ClientHandler(clientSocket);
+//                clientHandler.start();
+//            } catch (IOException ex) {
+//                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//
+//    }
+//
+//class ClientHandler extends Thread {
+//
+//    private Socket clientSocket;
+//    private DataInputStream in;
+//    private DataOutputStream out;
+//    ArrayList<Client> clients;
+//
+//    public ClientHandler(Socket clientSocket) {
+//        this.clientSocket = clientSocket;
+//        clients = new ArrayList<>();
+//    }
+//
+//    @Override
+//    public void run() {
+//        try {
+//            // Initialize input and output streams
+//            in = new DataInputStream(clientSocket.getInputStream());
+//            out = new DataOutputStream(clientSocket.getOutputStream());
+//            System.out.println("test is here");
+//            Client client = new Client(ipAddress.toString(), port);
+//            clients.add(client);
+//            String cinfo = this.clientSocket.getInetAddress().toString() + ":" + this.clientSocket.getPort();
+//            ServerFrm.clientsListModel.addElement(cinfo);
+//            // Handle client requests here
+//            // For example, you can read data from the client and send responses
+//            // Example:
+////            String message = in.readUTF();
+////            System.out.println("Message from client " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
+////            System.out.println(message);
+//            // Handle the message...
+//
+//        } catch (IOException ex) {
+//            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+//        } finally {
+//            // Close the connection
+//            try {
+//                if (in != null) {
+//                    in.close();
+//                }
+//                if (out != null) {
+//                    out.close();
+//                }
+//                if (clientSocket != null) {
+//                    clientSocket.close();
+//                }
+//            } catch (IOException ex) {
+//                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//    }
+//
+//}
