@@ -80,20 +80,21 @@ public class Server extends Thread {
                 /// ////////////////////////
                 // we should siplt the sign in and the sign uup to seprite threads
                 /// /////////////////////////
-                String message = in.readUTF();
+                String clientMessage = in.readUTF();
                 /// this is the messsage from the client we will chek like four things
                 // 1 if the message starts with one it means for sign in
 
                 System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
-                System.out.println(message);
+                System.out.println(clientMessage);
                 // we will split the data came from the client
 
-                String[] data = message.split(",");
-                String email = data[0];
-                String passwordData = data[1];
+                String[] data = clientMessage.split(",");
+                String operationCode = data[0];
+                // sign in section  1 means sigin in
+                if (operationCode.equals("1")) {
+                    String email = data[1];
+                    String passwordData = data[2];
 
-                // sign in section 
-                if (message == "") {
                     // we will check the sign in data in the database
                     try {
                         Connection connection = DriverManager.getConnection(url, username, password);
@@ -135,59 +136,59 @@ public class Server extends Thread {
                     }
 
                 }
-                
                 // sign ups section 
-                
-                String SignUpmessage = in.readUTF();
-                String[] signupdata = SignUpmessage.split(",");
-                String name = signupdata[0];
-                String lastName = signupdata[1];
-                email = signupdata[2];
-                passwordData = signupdata[3];
-                try {
-                    Connection connection = DriverManager.getConnection(url, username, password);
-                    String checkIfExistsSql = "SELECT COUNT(*) AS count FROM clients WHERE email = ?";
-                    PreparedStatement checkIfExistsStatement = connection.prepareStatement(checkIfExistsSql);
-                    checkIfExistsStatement.setString(1, email);
-                    ResultSet resultSet = checkIfExistsStatement.executeQuery();
-                    resultSet.next();
-                    int count = resultSet.getInt("count");
-                    if (count > 0) {
-                        // Email already exists
-                        try {
-                            System.out.println("Email already exists");
-                            out.writeUTF("email already exists");
-                        } catch (IOException ex) {
-                            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        // Email doesn't exist, proceed with insertion
-                        String insertSql = "INSERT INTO clients (name, surname, email, password) VALUES (?, ?, ?, ?)";
-                        PreparedStatement insertStatement = connection.prepareStatement(insertSql);
-                        insertStatement.setString(1, name);
-                        insertStatement.setString(2, lastName);
-                        insertStatement.setString(3, email);
-                        insertStatement.setString(4, passwordData);
-                        int rowsAffected = insertStatement.executeUpdate();
-                        if (rowsAffected > 0) {
+                if (operationCode.equals("2")) {
+                    String name = data[1];
+                    String lastName = data[2];
+                    String email = data[3];
+                    String passwordData = data[4];
+                    try {
+                        Connection connection = DriverManager.getConnection(url, username, password);
+                        String checkIfExistsSql = "SELECT COUNT(*) AS count FROM clients WHERE email = ?";
+                        PreparedStatement checkIfExistsStatement = connection.prepareStatement(checkIfExistsSql);
+                        checkIfExistsStatement.setString(1, email);
+                        ResultSet resultSet = checkIfExistsStatement.executeQuery();
+                        resultSet.next();
+                        int count = resultSet.getInt("count");
+                        if (count > 0) {
+                            // Email already exists
                             try {
-                                System.out.println("Data inserted successfully");
-                                out.writeUTF("data inserted");
+                                System.out.println("Email already exists");
+                                out.writeUTF("email already exists");
                             } catch (IOException ex) {
                                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                             }
                         } else {
-                            try {
-                                System.out.println("Insertion failed");
-                                out.writeUTF("insertion failed");
-                            } catch (IOException ex) {
-                                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                            // Email doesn't exist, proceed with insertion
+                            String insertSql = "INSERT INTO clients (name, surname, email, password) VALUES (?, ?, ?, ?)";
+                            PreparedStatement insertStatement = connection.prepareStatement(insertSql);
+                            insertStatement.setString(1, name);
+                            insertStatement.setString(2, lastName);
+                            insertStatement.setString(3, email);
+                            insertStatement.setString(4, passwordData);
+                            int rowsAffected = insertStatement.executeUpdate();
+                            if (rowsAffected > 0) {
+                                try {
+                                    System.out.println("Data inserted successfully");
+                                    out.writeUTF("data inserted");
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            } else {
+                                try {
+                                    System.out.println("Insertion failed");
+                                    out.writeUTF("insertion failed");
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+                                }
                             }
                         }
+                    } catch (SQLException e) {
+                        System.out.println(e.getMessage());
                     }
-                } catch (SQLException e) {
-                    System.out.println(e.getMessage());
                 }
+//                if () {
+//                }
 
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
