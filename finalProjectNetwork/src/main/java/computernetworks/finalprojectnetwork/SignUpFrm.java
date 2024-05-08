@@ -4,6 +4,7 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import java.util.Arrays;
 import javax.swing.JOptionPane;
 
 /**
@@ -139,20 +140,22 @@ public class SignUpFrm extends javax.swing.JFrame {
         String email = emailTxt.getText();
         signUpdata += email;
         signUpdata += ",";
-        String password = passwordTxt.getToolTipText();
+        String password = Arrays.toString(passwordTxt.getPassword());
         signUpdata += password;
         signUpdata += ",";
-        String confirmPassword = confirmPasswordTxt.getToolTipText();
+        String confirmPassword = Arrays.toString(confirmPasswordTxt.getPassword());
         if ("".equals(name) || "".equals(lastname) || "".equals(email) || "".equals(password) || "".equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "fill all the fields");
+        } else {
+            if (!password.equals(confirmPassword)) {
+                JOptionPane.showMessageDialog(this, "confirm password wrong");
+            } else {
+                client.sendDataToserverToCreateNewAccount(signUpdata);
+                this.setVisible(false);
+                MainFrm minFrm = new MainFrm();
+                minFrm.setVisible(true);
+            }
         }
-//        if (!password.equals(confirmPassword)) {
-//            JOptionPane.showMessageDialog(this, "confirm password wrong");
-//        }
-        client.sendDataToserverToCreateNewAccount(signUpdata);
-        this.setVisible(false);
-        MainFrm minFrm = new MainFrm();
-        
 
 
     }//GEN-LAST:event_signUpButtonActionPerformed

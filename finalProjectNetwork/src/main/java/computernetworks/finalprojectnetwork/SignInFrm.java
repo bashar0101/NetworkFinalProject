@@ -131,19 +131,18 @@ public class SignInFrm extends javax.swing.JFrame {
         data += passwordTxt.getText();
         //client.sendDataToServer();
         client.sendDataToCheckInDataBase(data);
-//        server.CheckData();
         if (client.checkDBServerResult.equals("11")) {
+            // if email true and password true we know from the server message (11) , go to main page of the program
             System.out.println("email and passowrd true");
             // go to our main page 
         } else if (client.checkDBServerResult.equals("10")) {
+            // if eamil true and password wrong server send (10) , we can reset password for this  
             System.out.println("email true but password wrong");
-            JOptionPane.showMessageDialog(this, "");
+            JOptionPane.showMessageDialog(this, "reset password");
 
         } else if (client.checkDBServerResult.equals("0")) {
-            // would you like to create account 
-            // if yes 
-            // open sign up page 
-            //if no close the client 
+            // becuse no email registerd in the database server send (0), we can create a new account or cancle
+            System.out.println("Email not found");
             int i = JOptionPane.showConfirmDialog(this, "Would you like to create account?");
             if (i == JOptionPane.YES_OPTION) {
                 //
@@ -154,9 +153,11 @@ public class SignInFrm extends javax.swing.JFrame {
 
             }
             if (i == JOptionPane.NO_OPTION) {
+                client.disconnectClientFromServer("removeClientFromServer");
+                this.setVisible(false);
                 client.disconnect();
+
             }
-            System.out.println("email not found in the database create account");
 
         }
     }//GEN-LAST:event_signInBtnActionPerformed
@@ -166,7 +167,7 @@ public class SignInFrm extends javax.swing.JFrame {
         this.setVisible(false);
         SignUpFrm signUp = new SignUpFrm();
         signUp.setVisible(true);
-        
+
     }//GEN-LAST:event_jButton1ActionPerformed
 
     /**

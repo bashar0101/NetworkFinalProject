@@ -70,13 +70,10 @@ public class Server extends Thread {
             clients.add(client);
             String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
             ServerFrm.clientsListModel.addElement(cinfo);
-            // get signin info
-            /// ////////////////////////
-            // we should siplt the sign in and the sign uup to seprite threads
-            /// /////////////////////////
+
             String clientMessage = in.readUTF();
-            /// this is the messsage from the client we will chek like four things
-            // 1 if the message starts with one it means for sign in
+            /// this is the messsage from the client we will check like four things
+            // 1 if the message starts with one it means clients want to sign in
 
             System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort());
             System.out.println(clientMessage);
@@ -121,10 +118,20 @@ public class Server extends Thread {
                         try {
                             System.out.println("No email registered");
                             out.writeUTF("0");
+                            if (in.readUTF().equals("removeClientFromServer")) {
+                                out.writeUTF("client" + client.port + " disconnected form the server");
+                                this.clients.remove(client);
+                                ServerFrm.clientsListModel.removeAllElements();
+                                for (Client sClient : clients) {
+                                    String newcinfo = sClient.socket.getInetAddress().toString() + ":" + sClient.socket.getPort();
+                                    ServerFrm.clientsListModel.addElement(newcinfo);
+                                }
+                            }
                         } catch (IOException ex) {
                             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
                         }
                     }
+
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
                 }
@@ -177,12 +184,11 @@ public class Server extends Thread {
                             }
                         }
                     }
+
                 } catch (SQLException e) {
                     System.out.println(e.getMessage());
                 }
             }
-//                if () {
-//                }
 
         } catch (IOException ex) {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
@@ -230,73 +236,3 @@ public class Server extends Thread {
     }
 
 }
-
-// public void ListenForClients() {
-//        this.isListening = true;
-//        while (isListening) {
-//            try {
-//                System.out.println("server waiting for clients...");
-//                Socket clientSocket = serverSocket.accept();//blocking
-//                System.out.println("client connected to server...");
-//
-//                ClientHandler clientHandler = new ClientHandler(clientSocket);
-//                clientHandler.start();
-//            } catch (IOException ex) {
-//                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//
-//    }
-//
-//class ClientHandler extends Thread {
-//
-//    private Socket clientSocket;
-//    private DataInputStream in;
-//    private DataOutputStream out;
-//    ArrayList<Client> clients;
-//
-//    public ClientHandler(Socket clientSocket) {
-//        this.clientSocket = clientSocket;
-//        clients = new ArrayList<>();
-//    }
-//
-//    @Override
-//    public void run() {
-//        try {
-//            // Initialize input and output streams
-//            in = new DataInputStream(clientSocket.getInputStream());
-//            out = new DataOutputStream(clientSocket.getOutputStream());
-//            System.out.println("test is here");
-//            Client client = new Client(ipAddress.toString(), port);
-//            clients.add(client);
-//            String cinfo = this.clientSocket.getInetAddress().toString() + ":" + this.clientSocket.getPort();
-//            ServerFrm.clientsListModel.addElement(cinfo);
-//            // Handle client requests here
-//            // For example, you can read data from the client and send responses
-//            // Example:
-////            String message = in.readUTF();
-////            System.out.println("Message from client " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-////            System.out.println(message);
-//            // Handle the message...
-//
-//        } catch (IOException ex) {
-//            Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//        } finally {
-//            // Close the connection
-//            try {
-//                if (in != null) {
-//                    in.close();
-//                }
-//                if (out != null) {
-//                    out.close();
-//                }
-//                if (clientSocket != null) {
-//                    clientSocket.close();
-//                }
-//            } catch (IOException ex) {
-//                Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
-//            }
-//        }
-//    }
-//
-//}

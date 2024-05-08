@@ -59,6 +59,8 @@ public class Client extends Thread {
             System.out.println("data send to server is :" + data);
             checkDBServerResult = in.readUTF();
             System.out.println("Server sasy : " + checkDBServerResult);
+            out.flush();
+
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,10 +73,24 @@ public class Client extends Thread {
             System.out.println("data send to server is :" + data);
             checkDBServerResult = in.readUTF();
             System.out.println("result of checking in db : " + checkDBServerResult);
+            out.flush();
 
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void disconnectClientFromServer(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            checkDBServerResult = in.readUTF();
+            System.out.println("result of checking in db : " + checkDBServerResult);
+            out.flush();
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
     }
 
     public void sendDataToServer() {
