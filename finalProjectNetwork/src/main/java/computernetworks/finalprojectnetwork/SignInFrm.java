@@ -103,7 +103,9 @@ public class SignInFrm extends javax.swing.JFrame {
 
     private void signInBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInBtnActionPerformed
         // TODO add your handling code here:
-        data = emailtxt.getText();
+        data += "1";
+        data += ",";
+        data += emailtxt.getText();
         data += ",";
         data += passwordTxt.getText();
         //client.sendDataToServer();

@@ -128,6 +128,8 @@ public class SignUpFrm extends javax.swing.JFrame {
 
     private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
         // TODO add your handling code here
+        signUpdata += "2";
+        signUpdata += ",";
         String name = nameTxt.getText();
         signUpdata += name;
         signUpdata += ",";
