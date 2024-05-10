@@ -24,13 +24,8 @@ public class SignInFrm extends javax.swing.JFrame {
 
     public SignInFrm() {
         initComponents();
-//        serverPort = server.port;
-//        serverIp = server.ipAddress.toString();
-        // we need to get the ip of the server and its port
-
         client = new Client("localhost", 222);
         client.ConnectToServer();
-//        client.Listen();
 
     }
 
@@ -124,19 +119,17 @@ public class SignInFrm extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void signInBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signInBtnActionPerformed
-        // TODO add your handling code here:
-//        if (this.getDefaultCloseOperation() == this.EXIT_ON_CLOSE) {
-//            data += "3";
-//            client.disconnectClientFromServer("3");
-//            this.setVisible(false);
-//        }
+
+        data = "";
         data += "1";
         data += ",";
         data += emailtxt.getText();
         data += ",";
         data += passwordTxt.getText();
+//        new Thread(() -> {
         // we will send the sign in data to server to check if the user is in the DB
         client.sendDataToCheckInDataBase(data);
+//        new Thread(() -> client.sendDataToCheckInDataBase(data)).start();
         // this is the respons from sever of the client request
         String[] dataFromServer = client.checkDBServerResult.split(",");
         String check = dataFromServer[0];
@@ -157,25 +150,34 @@ public class SignInFrm extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "reset password");
 
         } else if (check.equals("0")) {
-            // becuse no email registerd in the database server send (0), we can create a new account or cancle
+            // becuse no email registerd in the database server send (0), we can create a new account or cancel
             System.out.println("Email not found");
             int i = JOptionPane.showConfirmDialog(this, "Would you like to create account?");
+            this.signInBtn.setEnabled(false);
             if (i == JOptionPane.YES_OPTION) {
                 //
                 System.out.println("we are in the sign up frame...");
-                SignUpFrm signUp = new SignUpFrm();
-                signUp.setVisible(true);
-                this.setVisible(false);
+//                new Thread(() -> {
+                    SignUpFrm signUp = new SignUpFrm();
+                    this.setVisible(false);
+                    signUp.setVisible(true);
+//                }).start();
 
             }
-            if (i == JOptionPane.NO_OPTION || this.getDefaultCloseOperation() == this.EXIT_ON_CLOSE) {
-//                client.disconnectClientFromServer("3");
+            if (i == JOptionPane.NO_OPTION) {
                 this.setVisible(false);
                 client.disconnect();
+                System.exit(0);
 
+            }
+            if (i == JOptionPane.CANCEL_OPTION) {
+                this.setVisible(false);
+                client.disconnect();
+                System.exit(0);
             }
 
         }
+//        }).start();
 
     }//GEN-LAST:event_signInBtnActionPerformed
 

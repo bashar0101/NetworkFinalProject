@@ -22,7 +22,7 @@ public class Client extends Thread {
 //    static String siginInData = "";
     String checkDBServerResult = "";
     ///
-
+    
     Socket socket;
 
     DataInputStream in;
@@ -30,7 +30,7 @@ public class Client extends Thread {
     // server adresi ip address
     String serverIp;
     // port numarası
-    int port;
+    int serverPort;
     boolean isListening = false;
 
     public String clientName;
@@ -39,13 +39,13 @@ public class Client extends Thread {
 
     public Client(String serverIp, int port) {
         this.serverIp = serverIp;
-        this.port = port;
+        this.serverPort = port;
     }
 
     public boolean ConnectToServer() {
         try {
             // Client Soket nesnesi
-            socket = new Socket(this.serverIp, this.port);
+            socket = new Socket(this.serverIp, this.serverPort);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
 
@@ -55,33 +55,6 @@ public class Client extends Thread {
             System.out.println("Error connecting to server: " + err);
         }
         return true;
-    }
-
-    public void sendDataToserverToCreateNewAccount(String data) {
-        try {
-            out.writeUTF(data);
-            System.out.println("data send to server is :" + data);
-            checkDBServerResult = in.readUTF();
-            System.out.println("Server sasy : " + checkDBServerResult);
-            out.flush();
-
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-
-    public void sendDataToCheckInDataBase(String data) {
-        try {
-            data = SignInFrm.data;
-            out.writeUTF(data);
-            System.out.println("data send to server is :" + data);
-            checkDBServerResult = in.readUTF();
-            System.out.println("result of checking in db : " + checkDBServerResult);
-            out.flush();
-
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     public void disconnectClientFromServer(String data) {
@@ -94,6 +67,58 @@ public class Client extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+
+    }
+
+    public void sendDataToCheckInDataBase(String data) {
+//        new Thread (() -> {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            checkDBServerResult = "";
+            out.flush();
+            checkDBServerResult = in.readUTF();
+            System.out.println("response form server for checking in db : " + checkDBServerResult);
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+//        }).start();
+    }
+
+    public void sendDataToserverToCreateNewAccount(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            checkDBServerResult = "";
+            out.flush();
+            checkDBServerResult = in.readUTF();
+            System.out.println(" : " + checkDBServerResult);
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void createProject(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            out.flush();
+            checkDBServerResult = "";
+            checkDBServerResult = in.readUTF();
+            System.out.println(" : " + checkDBServerResult);
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+
+    public void sendBroadCastMessag(String message) {
 
     }
 

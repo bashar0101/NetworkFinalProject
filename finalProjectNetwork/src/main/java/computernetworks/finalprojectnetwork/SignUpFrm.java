@@ -14,14 +14,16 @@ import javax.swing.JOptionPane;
 public class SignUpFrm extends javax.swing.JFrame {
 
     Client client;
-    public static String signUpdata = "";
+    public String signUpdata = "";
 
     /**
      * Creates new form SignUpFrm
      */
     public SignUpFrm() {
         initComponents();
+//        client = SignInFrm.client;
         client = SignInFrm.client;
+//        client.ConnectToServer();
     }
 
     /**
@@ -130,6 +132,7 @@ public class SignUpFrm extends javax.swing.JFrame {
 
     private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
         // TODO add your handling code here
+        signUpdata = "";
         signUpdata += "2";
         signUpdata += ",";
         String name = nameTxt.getText();
@@ -146,7 +149,6 @@ public class SignUpFrm extends javax.swing.JFrame {
         signUpdata += ",";
         String password = new String(passwordTxt.getPassword());
         signUpdata += password;
-        signUpdata += ",";
         String confirmPassword = new String(confirmPasswordTxt.getPassword());
         if ("".equals(name) || "".equals(lastname) || "".equals(email) || "".equals(password) || "".equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "fill all the fields");
@@ -155,8 +157,8 @@ public class SignUpFrm extends javax.swing.JFrame {
                 JOptionPane.showMessageDialog(this, "confirm password wrong");
             } else {
                 client.sendDataToserverToCreateNewAccount(signUpdata);
-                this.setVisible(false);
                 SignInFrm signIn = new SignInFrm();
+                this.setVisible(false);
                 signIn.setVisible(true);
 //                MainFrm mainFrm = new MainFrm();
 //                mainFrm.setVisible(true);

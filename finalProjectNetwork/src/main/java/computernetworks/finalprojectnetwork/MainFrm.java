@@ -5,6 +5,7 @@
 package computernetworks.finalprojectnetwork;
 
 import javax.swing.DefaultListModel;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,6 +19,8 @@ public class MainFrm extends javax.swing.JFrame {
     public static DefaultListModel projectListModel = new DefaultListModel();
 
     Client client;
+    User user;
+    static String data = "";
 
     public MainFrm() {
         initComponents();
@@ -25,6 +28,7 @@ public class MainFrm extends javax.swing.JFrame {
         client = SignInFrm.client;
         UserNameSurname.setText("User : " + client.clientName + " " + client.clientLastName);
         UserEmail.setText("User Email : " + client.cleintEmail);
+        user = new User(client.clientName, client.clientLastName, client.cleintEmail);
 
     }
 
@@ -59,6 +63,11 @@ public class MainFrm extends javax.swing.JFrame {
         UserEmail.setText("jLabel2");
 
         ceartProjectBtn.setText("Create Project");
+        ceartProjectBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ceartProjectBtnActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -68,13 +77,13 @@ public class MainFrm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(35, 35, 35)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(UserNameSurname, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(UserEmail)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(UserNameSurname, javax.swing.GroupLayout.DEFAULT_SIZE, 256, Short.MAX_VALUE)
+                            .addComponent(UserEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(74, 74, 74)
                         .addComponent(ceartProjectBtn)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 236, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -99,6 +108,26 @@ public class MainFrm extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void ceartProjectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ceartProjectBtnActionPerformed
+        // TODO add your handling code here:
+        String pName = JOptionPane.showInputDialog(this, "Enter project Name?");
+        Project p = new Project(pName, client.clientName);
+        MainFrm.projectListModel.addElement(pName);
+        String serverKey = "";
+        data += "3";
+        // we will send the name of the project and the manager of theproject 
+        data += ",";
+        data += pName;
+        data += ",";
+        // project manager
+        data += user.name;
+        client.createProject(data);
+//        if () {
+//        }
+
+
+    }//GEN-LAST:event_ceartProjectBtnActionPerformed
 
     /**
      * @param args the command line arguments
