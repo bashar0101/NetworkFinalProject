@@ -26,6 +26,7 @@ public class SignInFrm extends javax.swing.JFrame {
         initComponents();
         client = new Client("localhost", 222);
         client.ConnectToServer();
+        Client.signInFrm = this;
 
     }
 
@@ -126,12 +127,12 @@ public class SignInFrm extends javax.swing.JFrame {
         data += emailtxt.getText();
         data += ",";
         data += passwordTxt.getText();
-//        new Thread(() -> {
+
         // we will send the sign in data to server to check if the user is in the DB
         client.sendDataToCheckInDataBase(data);
-//        new Thread(() -> client.sendDataToCheckInDataBase(data)).start();
+
         // this is the respons from sever of the client request
-        String[] dataFromServer = client.checkDBServerResult.split(",");
+        String[] dataFromServer = client.serverResponse.split(",");
         String check = dataFromServer[0];
 
         if (check.equals("11")) {
@@ -139,8 +140,13 @@ public class SignInFrm extends javax.swing.JFrame {
             client.clientName = dataFromServer[1];
             client.clientLastName = dataFromServer[2];
             client.cleintEmail = dataFromServer[3];
-            System.out.println("email and passowrd true");
+            
             MainFrm mainFrm = new MainFrm();
+            for (int i = 4; i < dataFromServer.length; i++) {
+                MainFrm.projectListModel.addElement(dataFromServer[i]);
+            }
+            System.out.println("email and passowrd true");
+
             this.setVisible(false);
             mainFrm.setVisible(true);
             // go to our main page 
@@ -152,32 +158,10 @@ public class SignInFrm extends javax.swing.JFrame {
         } else if (check.equals("0")) {
             // becuse no email registerd in the database server send (0), we can create a new account or cancel
             System.out.println("Email not found");
-            int i = JOptionPane.showConfirmDialog(this, "Would you like to create account?");
-            this.signInBtn.setEnabled(false);
-            if (i == JOptionPane.YES_OPTION) {
-                //
-                System.out.println("we are in the sign up frame...");
-//                new Thread(() -> {
-                    SignUpFrm signUp = new SignUpFrm();
-                    this.setVisible(false);
-                    signUp.setVisible(true);
-//                }).start();
-
-            }
-            if (i == JOptionPane.NO_OPTION) {
-                this.setVisible(false);
-                client.disconnect();
-                System.exit(0);
-
-            }
-            if (i == JOptionPane.CANCEL_OPTION) {
-                this.setVisible(false);
-                client.disconnect();
-                System.exit(0);
-            }
+            JOptionPane.showMessageDialog(this, "Email not registerd in the database!!");
+//            this.signInBtn.setEnabled(false);
 
         }
-//        }).start();
 
     }//GEN-LAST:event_signInBtnActionPerformed
 

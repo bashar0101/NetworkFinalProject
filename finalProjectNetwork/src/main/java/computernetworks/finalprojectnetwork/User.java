@@ -24,7 +24,5 @@ public class User {
         this.email = email;
         userProjects = new ArrayList<>();
     }
-    
-    
 
 }

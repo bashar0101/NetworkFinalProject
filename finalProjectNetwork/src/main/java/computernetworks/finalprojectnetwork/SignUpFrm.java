@@ -14,16 +14,15 @@ import javax.swing.JOptionPane;
 public class SignUpFrm extends javax.swing.JFrame {
 
     Client client;
-    public String signUpdata = "";
+    public String data = "";
 
     /**
      * Creates new form SignUpFrm
      */
     public SignUpFrm() {
         initComponents();
-//        client = SignInFrm.client;
         client = SignInFrm.client;
-//        client.ConnectToServer();
+        
     }
 
     /**
@@ -132,23 +131,23 @@ public class SignUpFrm extends javax.swing.JFrame {
 
     private void signUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signUpButtonActionPerformed
         // TODO add your handling code here
-        signUpdata = "";
-        signUpdata += "2";
-        signUpdata += ",";
+        data = "";
+        data += "2";
+        data += ",";
         String name = nameTxt.getText();
         client.clientName = name;
-        signUpdata += name;
-        signUpdata += ",";
+        data += name;
+        data += ",";
         String lastname = lastNameTxt.getText();
         client.clientLastName = lastname;
-        signUpdata += lastname;
-        signUpdata += ",";
+        data += lastname;
+        data += ",";
         String email = emailTxt.getText();
         client.cleintEmail = email;
-        signUpdata += email;
-        signUpdata += ",";
+        data += email;
+        data += ",";
         String password = new String(passwordTxt.getPassword());
-        signUpdata += password;
+        data += password;
         String confirmPassword = new String(confirmPasswordTxt.getPassword());
         if ("".equals(name) || "".equals(lastname) || "".equals(email) || "".equals(password) || "".equals(confirmPassword)) {
             JOptionPane.showMessageDialog(this, "fill all the fields");
@@ -156,12 +155,16 @@ public class SignUpFrm extends javax.swing.JFrame {
             if (!password.equals(confirmPassword)) {
                 JOptionPane.showMessageDialog(this, "confirm password wrong");
             } else {
-                client.sendDataToserverToCreateNewAccount(signUpdata);
-                SignInFrm signIn = new SignInFrm();
-                this.setVisible(false);
-                signIn.setVisible(true);
-//                MainFrm mainFrm = new MainFrm();
-//                mainFrm.setVisible(true);
+                client.sendDataToserverToCreateNewAccount(data);
+                String serverResult = client.serverResponse;
+                if (serverResult.equals("111")) {
+                    SignInFrm signIn = Client.signInFrm;
+                    this.setVisible(false);
+                    signIn.setVisible(true);
+                } else if (serverResult.equals("000")) {
+                    JOptionPane.showMessageDialog(this, "Email is used use new email!!");
+                    
+                }
             }
         }
 

@@ -4,6 +4,7 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import java.util.ArrayList;
 import javax.swing.DefaultListModel;
 import javax.swing.JOptionPane;
 
@@ -17,7 +18,6 @@ public class MainFrm extends javax.swing.JFrame {
      * Creates new form MainFrm
      */
     public static DefaultListModel projectListModel = new DefaultListModel();
-
     Client client;
     User user;
     static String data = "";
@@ -28,7 +28,7 @@ public class MainFrm extends javax.swing.JFrame {
         client = SignInFrm.client;
         UserNameSurname.setText("User : " + client.clientName + " " + client.clientLastName);
         UserEmail.setText("User Email : " + client.cleintEmail);
-        user = new User(client.clientName, client.clientLastName, client.cleintEmail);
+//        user = new User(client.clientName, client.clientLastName, client.cleintEmail);
 
     }
 
@@ -47,10 +47,16 @@ public class MainFrm extends javax.swing.JFrame {
         UserNameSurname = new javax.swing.JLabel();
         UserEmail = new javax.swing.JLabel();
         ceartProjectBtn = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Project Managment");
 
+        clientProjectsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                clientProjectsListMouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(clientProjectsList);
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
@@ -69,6 +75,13 @@ public class MainFrm extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Join Project");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -82,8 +95,10 @@ public class MainFrm extends javax.swing.JFrame {
                             .addComponent(UserEmail, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(74, 74, 74)
-                        .addComponent(ceartProjectBtn)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(ceartProjectBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel1)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -101,9 +116,11 @@ public class MainFrm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(UserEmail)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton1)
+                        .addGap(81, 81, 81)
                         .addComponent(ceartProjectBtn))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(63, Short.MAX_VALUE))
+                .addContainerGap(72, Short.MAX_VALUE))
         );
 
         pack();
@@ -112,22 +129,69 @@ public class MainFrm extends javax.swing.JFrame {
     private void ceartProjectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ceartProjectBtnActionPerformed
         // TODO add your handling code here:
         String pName = JOptionPane.showInputDialog(this, "Enter project Name?");
-        Project p = new Project(pName, client.clientName);
-        MainFrm.projectListModel.addElement(pName);
         String serverKey = "";
+        data = "";
+//        MainFrm.projectListModel.addElement(pName);
         data += "3";
         // we will send the name of the project and the manager of theproject 
         data += ",";
+        data += client.cleintEmail;
+        data += ",";
         data += pName;
         data += ",";
+        data += client.clientName;
+        data += ",";
+        data += client.clientLastName;
+
         // project manager
-        data += user.name;
         client.createProject(data);
-//        if () {
-//        }
+        String[] serverReponses = client.serverResponse.split(",");
+
+        if (serverReponses[0].equals("31")) {
+            Project project = new Project(pName, client.clientName);
+            serverKey = serverReponses[0];
+            project.projectServerKey = serverKey;
+            MainFrm.projectListModel.addElement(pName);
+            JOptionPane.showMessageDialog(this, "project created!");
+            System.out.println("project created done!!");
+        } else if (serverReponses[0].equals("30")) {
+            JOptionPane.showMessageDialog(this, "This project name is already used!");
+        }
 
 
     }//GEN-LAST:event_ceartProjectBtnActionPerformed
+
+    private void clientProjectsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientProjectsListMouseClicked
+        // TODO add your handling code here:
+        System.out.println("couse clicked");
+    }//GEN-LAST:event_clientProjectsListMouseClicked
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String projectName = JOptionPane.showInputDialog(this, "Enter the name of the project!");
+        String projectKey = JOptionPane.showInputDialog(this, "Enter the key of the project!");
+        data = "";
+        data += "4";
+        data += ",";
+        data += projectName;
+        data += ",";
+        data += projectKey;
+        data += ",";
+        data += client.clientName;
+        data += ",";
+        data += client.clientLastName;
+        data += ",";
+        data += client.cleintEmail;
+        client.joinClientProject(data);
+        String[] serverReponses = client.serverResponse.split(",");
+        if (serverReponses[0].equals("41")) {
+            MainFrm.projectListModel.addElement(projectName);
+            JOptionPane.showMessageDialog(this, "Join the project succefully!");
+        } else if (serverReponses[0].equals("40")) {
+            JOptionPane.showMessageDialog(this, "Did not joined the project!");
+        }
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -169,6 +233,7 @@ public class MainFrm extends javax.swing.JFrame {
     private javax.swing.JLabel UserNameSurname;
     private javax.swing.JButton ceartProjectBtn;
     private javax.swing.JList<String> clientProjectsList;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

@@ -20,9 +20,9 @@ public class Client extends Thread {
     // data sending part
     // first we wnat to send the sign in data to check in the database
 //    static String siginInData = "";
-    String checkDBServerResult = "";
+    String serverResponse = "";
     ///
-    
+
     Socket socket;
 
     DataInputStream in;
@@ -37,6 +37,8 @@ public class Client extends Thread {
     public String clientLastName;
     public String cleintEmail;
 
+    static SignInFrm signInFrm;
+
     public Client(String serverIp, int port) {
         this.serverIp = serverIp;
         this.serverPort = port;
@@ -44,7 +46,7 @@ public class Client extends Thread {
 
     public boolean ConnectToServer() {
         try {
-            // Client Soket nesnesi
+
             socket = new Socket(this.serverIp, this.serverPort);
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
@@ -61,9 +63,11 @@ public class Client extends Thread {
         try {
             out.writeUTF(data);
             System.out.println("data send to server is :" + data);
-            checkDBServerResult = in.readUTF();
-            System.out.println("result of checking in db : " + checkDBServerResult);
+            serverResponse = in.readUTF();
+            System.out.println("result of checking in db : " + serverResponse);
             out.flush();
+//            checkDBServerResult = "";
+
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -71,30 +75,28 @@ public class Client extends Thread {
     }
 
     public void sendDataToCheckInDataBase(String data) {
-//        new Thread (() -> {
         try {
             out.writeUTF(data);
             System.out.println("data send to server is :" + data);
-            checkDBServerResult = "";
+            serverResponse = "";
             out.flush();
-            checkDBServerResult = in.readUTF();
-            System.out.println("response form server for checking in db : " + checkDBServerResult);
+            serverResponse = in.readUTF();
+            System.out.println("Response form server (Sign In) : " + serverResponse);
             out.flush();
 
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
-//        }).start();
     }
 
     public void sendDataToserverToCreateNewAccount(String data) {
         try {
             out.writeUTF(data);
             System.out.println("data send to server is :" + data);
-            checkDBServerResult = "";
+            serverResponse = "";
             out.flush();
-            checkDBServerResult = in.readUTF();
-            System.out.println(" : " + checkDBServerResult);
+            serverResponse = in.readUTF();
+            System.out.println("Response from server (sign up) : " + serverResponse);
             out.flush();
 
         } catch (IOException ex) {
@@ -107,15 +109,31 @@ public class Client extends Thread {
             out.writeUTF(data);
             System.out.println("data send to server is :" + data);
             out.flush();
-            checkDBServerResult = "";
-            checkDBServerResult = in.readUTF();
-            System.out.println(" : " + checkDBServerResult);
+            serverResponse = "";
+            serverResponse = in.readUTF();
+            System.out.println("Response form server (Create new project) : " + serverResponse);
             out.flush();
 
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
 
+    }
+
+    public void joinClientProject(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            out.flush();
+            serverResponse = "";
+            serverResponse = in.readUTF();
+            System.out.println("Response form server (Join project) : " + serverResponse);
+//            checkDBServerResult = "";
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     public void sendBroadCastMessag(String message) {
@@ -127,21 +145,19 @@ public class Client extends Thread {
         this.start();
     }
 
-    @Override
-    public void run() {
-        while (isListening) {
-            try {
-//                out.writeUTF(SignInFrm.data);
-//                System.out.println("data send to server is :" + SignInFrm.data);
-                checkDBServerResult = in.readUTF();
-                System.out.println("Server sasy : " + checkDBServerResult);
-
-            } catch (IOException ex) {
-                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
+//    @Override
+//    public void run() {
+//        while (isListening) {
+//            try {
+//
+//                checkDBServerResult = in.readUTF();
+//                System.out.println("Server sasy : " + checkDBServerResult);
+//
+//            } catch (IOException ex) {
+//                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+//            }
+//        }
+//    }
     public void SendMessage(String data) {
         try {
             out.writeUTF(data);

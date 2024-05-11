@@ -14,7 +14,8 @@ public class Project {
 
     String projectName;
     String projectManager;
-    ArrayList<User> projectMembers;
+    String projectServerKey;
+    ArrayList<Client> projectMembers;
 
     public Project(String projectName, String projectManager) {
         this.projectName = projectName;
