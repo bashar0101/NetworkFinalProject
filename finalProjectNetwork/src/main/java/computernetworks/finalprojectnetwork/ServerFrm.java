@@ -110,15 +110,16 @@ public class ServerFrm extends javax.swing.JFrame {
         int port = Integer.parseInt(portTxt.getText());
         server = new Server();
         server.Create(port);
-        startServerBtn.setEnabled(false);
+        this.setEnabled(false);
         stopServerBtn.setEnabled(true);
         server.Listen();
     }//GEN-LAST:event_startServerBtnActionPerformed
 
     private void stopServerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopServerBtnActionPerformed
         // TODO add your handling code here:
-        this.server.Stop();
+        server.Stop();
         this.setVisible(false);
+        startServerBtn.setEnabled(true);
 
     }//GEN-LAST:event_stopServerBtnActionPerformed
 

@@ -4,17 +4,28 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import javax.swing.DefaultListModel;
+
 /**
  *
  * @author basha
  */
 public class ProjectFrm extends javax.swing.JFrame {
 
+    Client client;
+    static String data = "";
+    public static DefaultListModel comingMessagesListModel = new DefaultListModel();
+    String projectName;
+
     /**
      * Creates new form ProjectFrm
      */
     public ProjectFrm() {
         initComponents();
+        client = SignInFrm.client;
+        comingMessageList.setModel(comingMessagesListModel);
+        projectName = MainFrm.projectName;
+        projectTitle.setText(projectName);
     }
 
     /**
@@ -26,21 +37,98 @@ public class ProjectFrm extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jScrollPane1 = new javax.swing.JScrollPane();
+        sendMessageField = new javax.swing.JTextArea();
+        jButton1 = new javax.swing.JButton();
+        projectTitle = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        comingMessageList = new javax.swing.JList<>();
+        jScrollPane3 = new javax.swing.JScrollPane();
+        onlineClients = new javax.swing.JList<>();
+        jLabel1 = new javax.swing.JLabel();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        sendMessageField.setColumns(20);
+        sendMessageField.setRows(5);
+        jScrollPane1.setViewportView(sendMessageField);
+
+        jButton1.setText("Send Message ");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
+        projectTitle.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
+        projectTitle.setText("jLabel1");
+
+        jScrollPane2.setViewportView(comingMessageList);
+
+        jScrollPane3.setViewportView(onlineClients);
+
+        jLabel1.setText("Online clients");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 579, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(projectTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(54, 54, 54)
+                                .addComponent(jButton1)))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel1))))
+                .addContainerGap(34, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 439, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(projectTitle)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
+                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel1)
+                    .addComponent(jButton1))
+                .addGap(23, 23, 23)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(48, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String message = sendMessageField.getText();
+        data = "";
+        data += "5";
+        data += ",";
+        data += projectName;
+        data += ",";
+        data += message;
+        client.sendDataToSendToTheProjectClients(data);
+        if (client.serverResponse.equals("51")) {
+            System.out.println("send sucessfully");
+        } else if (client.serverResponse.equals("51")) {
+            System.out.println("wrong in sending");
+        }
+        sendMessageField.setText("");
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -78,5 +166,14 @@ public class ProjectFrm extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JList<String> comingMessageList;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JList<String> onlineClients;
+    private javax.swing.JLabel projectTitle;
+    private javax.swing.JTextArea sendMessageField;
     // End of variables declaration//GEN-END:variables
 }

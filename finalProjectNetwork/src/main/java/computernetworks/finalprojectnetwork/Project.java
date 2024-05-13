@@ -4,6 +4,7 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import java.net.Socket;
 import java.util.ArrayList;
 
 /**
@@ -12,6 +13,7 @@ import java.util.ArrayList;
  */
 public class Project {
 
+    public static ArrayList<Socket> connectedToPRojectClients;
     String projectName;
     String projectManager;
     String projectServerKey;
@@ -21,10 +23,6 @@ public class Project {
         this.projectName = projectName;
         this.projectManager = projectManager;
         this.projectMembers = new ArrayList<>();
-    }
-
-    public void addmember() {
-
     }
 
 }

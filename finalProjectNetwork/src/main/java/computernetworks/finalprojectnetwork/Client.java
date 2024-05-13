@@ -74,6 +74,21 @@ public class Client extends Thread {
 
     }
 
+    public void sendDataToSendToTheProjectClients(String data) {
+        try {
+            out.writeUTF(data);
+            System.out.println("data send to server is :" + data);
+            serverResponse = "";
+            out.flush();
+            serverResponse = in.readUTF();
+            System.out.println("Response form server (Sign In) : " + serverResponse);
+            out.flush();
+
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void sendDataToCheckInDataBase(String data) {
         try {
             out.writeUTF(data);

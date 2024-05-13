@@ -17,9 +17,10 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
+    public static String projectName;
+    public static Project project;
     public static DefaultListModel projectListModel = new DefaultListModel();
     Client client;
-    User user;
     static String data = "";
 
     public MainFrm() {
@@ -28,7 +29,6 @@ public class MainFrm extends javax.swing.JFrame {
         client = SignInFrm.client;
         UserNameSurname.setText("User : " + client.clientName + " " + client.clientLastName);
         UserEmail.setText("User Email : " + client.cleintEmail);
-//        user = new User(client.clientName, client.clientLastName, client.cleintEmail);
 
     }
 
@@ -131,7 +131,6 @@ public class MainFrm extends javax.swing.JFrame {
         String pName = JOptionPane.showInputDialog(this, "Enter project Name?");
         String serverKey = "";
         data = "";
-//        MainFrm.projectListModel.addElement(pName);
         data += "3";
         // we will send the name of the project and the manager of theproject 
         data += ",";
@@ -148,10 +147,10 @@ public class MainFrm extends javax.swing.JFrame {
         String[] serverReponses = client.serverResponse.split(",");
 
         if (serverReponses[0].equals("31")) {
-            Project project = new Project(pName, client.clientName);
+            project = new Project(pName, client.clientName);
             serverKey = serverReponses[0];
             project.projectServerKey = serverKey;
-            MainFrm.projectListModel.addElement(pName);
+            MainFrm.projectListModel.addElement(pName + " ---> " + serverReponses[1]);
             JOptionPane.showMessageDialog(this, "project created!");
             System.out.println("project created done!!");
         } else if (serverReponses[0].equals("30")) {
@@ -163,7 +162,10 @@ public class MainFrm extends javax.swing.JFrame {
 
     private void clientProjectsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientProjectsListMouseClicked
         // TODO add your handling code here:
-        System.out.println("couse clicked");
+        projectName = clientProjectsList.getSelectedValue();
+        ProjectFrm pFrame = new ProjectFrm();
+        pFrame.setVisible(true);
+
     }//GEN-LAST:event_clientProjectsListMouseClicked
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
@@ -183,9 +185,12 @@ public class MainFrm extends javax.swing.JFrame {
         data += ",";
         data += client.cleintEmail;
         client.joinClientProject(data);
+
         String[] serverReponses = client.serverResponse.split(",");
         if (serverReponses[0].equals("41")) {
+
             MainFrm.projectListModel.addElement(projectName);
+//            Project.connectedToPRojectClients.add(client.socket);
             JOptionPane.showMessageDialog(this, "Join the project succefully!");
         } else if (serverReponses[0].equals("40")) {
             JOptionPane.showMessageDialog(this, "Did not joined the project!");

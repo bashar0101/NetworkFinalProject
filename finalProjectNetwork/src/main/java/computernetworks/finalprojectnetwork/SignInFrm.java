@@ -18,7 +18,6 @@ public class SignInFrm extends javax.swing.JFrame {
     int serverPort;
     String serverIp;
     public static Client client;
-    Server server = ServerFrm.server;
 
     static String data = "";
 
@@ -130,17 +129,15 @@ public class SignInFrm extends javax.swing.JFrame {
 
         // we will send the sign in data to server to check if the user is in the DB
         client.sendDataToCheckInDataBase(data);
-
         // this is the respons from sever of the client request
         String[] dataFromServer = client.serverResponse.split(",");
         String check = dataFromServer[0];
-
         if (check.equals("11")) {
             // if email true and password true we know from the server message (11) , go to main page of the program
             client.clientName = dataFromServer[1];
             client.clientLastName = dataFromServer[2];
             client.cleintEmail = dataFromServer[3];
-            
+
             MainFrm mainFrm = new MainFrm();
             for (int i = 4; i < dataFromServer.length; i++) {
                 MainFrm.projectListModel.addElement(dataFromServer[i]);
