@@ -161,6 +161,11 @@ public class Client extends Thread {
                 if (dataFromServer[0].equals("91")) {
                     ProjectFrm.comingMessagesListModel.addElement(dataFromServer[1] + " " + dataFromServer[2] + " : " + dataFromServer[3] + "(Solo message)");
                 }
+                if (dataFromServer[0].equals("exitAcc")) {
+                    mainFrm.setVisible(false);
+                    projectFrm.setVisible(false);
+                    System.exit(0);
+                }
 
             } catch (IOException ex) {
                 Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
@@ -185,21 +190,6 @@ public class Client extends Thread {
         mainFrm.setVisible(true);
     }
 
-    public void disconnectClientFromServer(String data) {
-        try {
-            out.writeUTF(data);
-            System.out.println("data send to server is :" + data);
-            serverResponse = in.readUTF();
-            System.out.println("result of checking in db : " + serverResponse);
-            out.flush();
-//            checkDBServerResult = "";
-
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-    }
-
 //    public void sendFile(String filePath) throws FileNotFoundException, IOException {
 //        byte[] buffer = new byte[8192]; // Buffer size
 //        int bytesRead;
@@ -208,7 +198,6 @@ public class Client extends Thread {
 //            out.write(buffer, 0, bytesRead);
 //        }
 //    }
-
     public void sendMessageSolo(String message, String name, String lastName) {
         try {
             out.writeUTF("91," + name + "," + lastName + "," + message);

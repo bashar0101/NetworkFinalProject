@@ -216,9 +216,26 @@ class ClientHandler extends Thread {
                     String message = data[5];
                     sendMessageSolo(message, pName, senderName, csenderLastName, toSend);
                 }
+                if (operationCode.equals("exit")) {
+                    String cEmail = data[1];
+                    disconnectClient(cEmail);
+                }
 
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    public void disconnectClient(String email) {
+        for (Client connectedClient : connectedClients) {
+            try {
+                if (connectedClient.cleintEmail.equals(email)) {
+                    connectedClients.remove(connectedClient);
+                }
+                out.writeUTF("exitAcc");
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
     }
@@ -230,13 +247,11 @@ class ClientHandler extends Thread {
 //            System.out.println("1");
 //        }
 //    }
-
     public void sendMessageSolo(String message, String pName, String senderName, String senderLastName, String toSend) {
         ArrayList<Client> c = getOnlineClientsInProject(pName);
         for (Client connectedClient : c) {
             if ((connectedClient.clientName + " " + connectedClient.clientLastName).equals(toSend)) {
                 connectedClient.sendMessageSolo(message, senderName, senderLastName);
-                System.out.println("1");
             }
         }
     }
@@ -246,7 +261,6 @@ class ClientHandler extends Thread {
         ArrayList<Client> c = getOnlineClientsInProject(pName);
         for (Client connectedClient : c) {
             connectedClient.sendMessage(message, senderName, senderLastName);
-            System.out.println("1");
         }
     }
 
