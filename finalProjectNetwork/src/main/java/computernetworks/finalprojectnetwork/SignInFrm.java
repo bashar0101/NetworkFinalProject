@@ -22,8 +22,8 @@ public class SignInFrm extends javax.swing.JFrame {
     public SignInFrm() {
         initComponents();
         // my aws instance ip is 16.171.143.43
-//        client = new Client("16.171.143.43", 5000);
-        client = new Client("localhost", 5000);
+        client = new Client("16.171.143.43", 5000);
+//        client = new Client("localhost", 5000);
         client.ConnectToServer();
         client.Listen();
         Client.signInFrm = this;
