@@ -4,7 +4,14 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import static computernetworks.finalprojectnetwork.MainFrm.project;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -18,10 +25,9 @@ public class ProjectFrm extends javax.swing.JFrame {
     Client client;
     static String data = "";
     public static DefaultListModel comingMessagesListModel = new DefaultListModel();
-//    public static DefaultListModel projectmembersListModel = new DefaultListModel();
     public static DefaultListModel projeConnectedClientsModel = new DefaultListModel();
     String projectName;
-    Server server = ServerFrm.server;
+//    Server server = ServerFrm.server;
 
     /**
      * Creates new form ProjectFrm
@@ -31,7 +37,6 @@ public class ProjectFrm extends javax.swing.JFrame {
         client = SignInFrm.client;
         nameLabel.setText(client.clientName);
         comingMessageList.setModel(comingMessagesListModel);
-//        projectMembersList.setModel(projectmembersListModel);
         onlineClients.setModel(projeConnectedClientsModel);
         projectName = MainFrm.projectName;
         projectTitle.setText(projectName);
@@ -50,22 +55,22 @@ public class ProjectFrm extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         sendMessageField = new javax.swing.JTextArea();
-        sendBroadcast = new javax.swing.JButton();
+        sendBroadcastBtn = new javax.swing.JButton();
         projectTitle = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         comingMessageList = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         onlineClients = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
-        jToggleButton1 = new javax.swing.JToggleButton();
-        jToggleButton2 = new javax.swing.JToggleButton();
+        getProjectMembersBtn = new javax.swing.JToggleButton();
+        getConnectedClientBtn = new javax.swing.JToggleButton();
         jLabel2 = new javax.swing.JLabel();
         jToggleButton3 = new javax.swing.JToggleButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
         sendSoloBtn = new javax.swing.JButton();
         nameLabel = new javax.swing.JLabel();
-        jToggleButton4 = new javax.swing.JToggleButton();
+        sendFileBtn = new javax.swing.JToggleButton();
         jButton1 = new javax.swing.JButton();
         fileTextField = new javax.swing.JTextField();
         jButton4 = new javax.swing.JButton();
@@ -82,10 +87,10 @@ public class ProjectFrm extends javax.swing.JFrame {
         sendMessageField.setRows(5);
         jScrollPane1.setViewportView(sendMessageField);
 
-        sendBroadcast.setText("Send Message ");
-        sendBroadcast.addActionListener(new java.awt.event.ActionListener() {
+        sendBroadcastBtn.setText("Send Message ");
+        sendBroadcastBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                sendBroadcastActionPerformed(evt);
+                sendBroadcastBtnActionPerformed(evt);
             }
         });
 
@@ -98,17 +103,17 @@ public class ProjectFrm extends javax.swing.JFrame {
 
         jLabel1.setText("Online clients");
 
-        jToggleButton1.setText("getProjectMembers");
-        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+        getProjectMembersBtn.setText("getProjectMembers");
+        getProjectMembersBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton1ActionPerformed(evt);
+                getProjectMembersBtnActionPerformed(evt);
             }
         });
 
-        jToggleButton2.setText("get Connected Clinets");
-        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+        getConnectedClientBtn.setText("get Connected Clinets");
+        getConnectedClientBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jToggleButton2ActionPerformed(evt);
+                getConnectedClientBtnActionPerformed(evt);
             }
         });
 
@@ -144,7 +149,12 @@ public class ProjectFrm extends javax.swing.JFrame {
 
         nameLabel.setText("nameLabel");
 
-        jToggleButton4.setText("Send Selected File");
+        sendFileBtn.setText("Send Selected File");
+        sendFileBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendFileBtnActionPerformed(evt);
+            }
+        });
 
         jButton1.setText("Select File");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -213,7 +223,7 @@ public class ProjectFrm extends javax.swing.JFrame {
                         .addComponent(jButton1)
                         .addGap(18, 18, 18)
                         .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jToggleButton4))
+                    .addComponent(sendFileBtn))
                 .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
@@ -245,9 +255,9 @@ public class ProjectFrm extends javax.swing.JFrame {
                             .addComponent(jScrollPane2))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jToggleButton2)
+                            .addComponent(getConnectedClientBtn)
                             .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(getProjectMembersBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(132, 132, 132))
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -257,7 +267,7 @@ public class ProjectFrm extends javax.swing.JFrame {
                                 .addGap(51, 51, 51)
                                 .addComponent(nameLabel))
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(sendBroadcast)
+                                .addComponent(sendBroadcastBtn)
                                 .addGap(18, 18, 18)
                                 .addComponent(sendSoloBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(34, 34, 34)
@@ -289,9 +299,9 @@ public class ProjectFrm extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jToggleButton2)
+                        .addComponent(getConnectedClientBtn)
                         .addGap(18, 18, 18)
-                        .addComponent(jToggleButton1)))
+                        .addComponent(getProjectMembersBtn)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jToggleButton3)
@@ -308,21 +318,21 @@ public class ProjectFrm extends javax.swing.JFrame {
                     .addComponent(jButton7))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 12, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(sendBroadcast)
+                    .addComponent(sendBroadcastBtn)
                     .addComponent(sendSoloBtn))
                 .addGap(41, 41, 41)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
                     .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jToggleButton4)
+                .addComponent(sendFileBtn)
                 .addGap(45, 45, 45))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void sendBroadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendBroadcastActionPerformed
+    private void sendBroadcastBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendBroadcastBtnActionPerformed
         // TODO add your handling code here:
         if (!sendMessageField.getText().isEmpty()) {
             String message = sendMessageField.getText();
@@ -342,9 +352,9 @@ public class ProjectFrm extends javax.swing.JFrame {
         }
 
 
-    }//GEN-LAST:event_sendBroadcastActionPerformed
+    }//GEN-LAST:event_sendBroadcastBtnActionPerformed
 
-    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+    private void getProjectMembersBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getProjectMembersBtnActionPerformed
         // TODO add your handling code here:
 //        projectmembersListModel.clear();
         data = "";
@@ -357,9 +367,9 @@ public class ProjectFrm extends javax.swing.JFrame {
 //        String[] responses = client.serverResponse.split(",");
 
 
-    }//GEN-LAST:event_jToggleButton1ActionPerformed
+    }//GEN-LAST:event_getProjectMembersBtnActionPerformed
 
-    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
+    private void getConnectedClientBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getConnectedClientBtnActionPerformed
 ;;        // TODO add your handling code here:
         projeConnectedClientsModel.removeAllElements();
         data = "";
@@ -369,7 +379,7 @@ public class ProjectFrm extends javax.swing.JFrame {
         client.sendDataToServer(data);
 
 
-    }//GEN-LAST:event_jToggleButton2ActionPerformed
+    }//GEN-LAST:event_getConnectedClientBtnActionPerformed
 
     private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
         // TODO add your handling code here:
@@ -409,17 +419,18 @@ public class ProjectFrm extends javax.swing.JFrame {
             sendMessageField.setText("");
         }
     }//GEN-LAST:event_sendSoloBtnActionPerformed
-
+    static String filePath;
+    File f;
+    int fileSize;
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         // TODO add your handling code here:
         data = "";
-        String filePath = "";
-        File f;
+        filePath = "";
         JFileChooser j = new JFileChooser();
         j.showSaveDialog(this);
         f = j.getSelectedFile();
         filePath = f.getPath();
-        int fileSize = (int) f.length();
+        fileSize = (int) f.length();
         fileTextField.setText(filePath);
         client.sendDataToServer(data);
 
@@ -428,14 +439,11 @@ public class ProjectFrm extends javax.swing.JFrame {
     private void jToggleButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton5ActionPerformed
         // TODO add your handling code here:
         sendMessageField.setText(sendMessageField.getText() + "\uD83E\uDD14");
-
-
     }//GEN-LAST:event_jToggleButton5ActionPerformed
 
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         // TODO add your handling code here:
         sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDE02");
-
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
@@ -451,19 +459,47 @@ public class ProjectFrm extends javax.swing.JFrame {
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
         sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDE01");
-
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton8ActionPerformed
         // TODO add your handling code here:
         sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDC4F");
-
     }//GEN-LAST:event_jButton8ActionPerformed
 
     private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
         // TODO add your handling code here:
         sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDE2D");
     }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void sendFileBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendFileBtnActionPerformed
+        BufferedReader reader = null;
+        try {
+            String data = "";
+            data += "getFile,";
+            data += client.clientName;
+            data += ",";
+            data += client.clientLastName;
+            data += ",";
+            data += projectName;
+            data += ",";
+            data += filePath;
+            data += ",";
+            reader = new BufferedReader(new FileReader(filePath));
+            String line;
+            try {
+                while ((line = reader.readLine()) != null) {
+                    data += reader.readLine();
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ProjectFrm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(ProjectFrm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        client.sendDataToServer(data);
+
+
+    }//GEN-LAST:event_sendFileBtnActionPerformed
 
     /**
      * @param args the command line arguments
@@ -503,6 +539,8 @@ public class ProjectFrm extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> comingMessageList;
     private javax.swing.JTextField fileTextField;
+    private javax.swing.JToggleButton getConnectedClientBtn;
+    private javax.swing.JToggleButton getProjectMembersBtn;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
@@ -517,15 +555,13 @@ public class ProjectFrm extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JToggleButton jToggleButton1;
-    private javax.swing.JToggleButton jToggleButton2;
     private javax.swing.JToggleButton jToggleButton3;
-    private javax.swing.JToggleButton jToggleButton4;
     private javax.swing.JToggleButton jToggleButton5;
     private javax.swing.JLabel nameLabel;
     private javax.swing.JList<String> onlineClients;
     private javax.swing.JLabel projectTitle;
-    private javax.swing.JButton sendBroadcast;
+    private javax.swing.JButton sendBroadcastBtn;
+    private javax.swing.JToggleButton sendFileBtn;
     private javax.swing.JTextArea sendMessageField;
     private javax.swing.JButton sendSoloBtn;
     // End of variables declaration//GEN-END:variables

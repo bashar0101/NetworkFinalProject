@@ -8,12 +8,16 @@ import static computernetworks.finalprojectnetwork.MainFrm.project;
 import static computernetworks.finalprojectnetwork.ProjectFrm.projeConnectedClientsModel;
 //import static computernetworks.finalprojectnetwork.ProjectFrm.projectmembersListModel;
 import static computernetworks.finalprojectnetwork.SignInFrm.client;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -26,10 +30,8 @@ import javax.swing.JOptionPane;
 public class Client extends Thread {
 
     // data sending part
-    // first we wnat to send the sign in data to check in the database
-//    static String siginInData = "";
+    // we will stor the server response inthis variable
     String serverResponse = "";
-    ///
 
     Socket socket;
 
@@ -39,8 +41,9 @@ public class Client extends Thread {
     String serverIp;
     // port numarası
     int serverPort;
-    boolean isListening = true;
 
+    boolean isListening = true;
+    // info for the client
     public String clientName;
     public String clientLastName;
     public String cleintEmail;
@@ -78,22 +81,26 @@ public class Client extends Thread {
     public void run() {
         while (isListening) {
             try {
+                // in the run function we will process the server response 
                 serverResponse = "";
                 serverResponse = in.readUTF();
                 System.out.println("Response form server : " + serverResponse);
-
+                // we will stor the response in a list 
                 String[] dataFromServer = client.serverResponse.split(",");
+                // the response[0] is to check what to do with 
                 // if response is 11 means that the user in the database
                 if (dataFromServer[0].equals("11")) {
                     signInCorrect(dataFromServer);
                     // if email in the database but password wrong response will be 10
-                } else if (dataFromServer[0].equals("10")) {
+                }
+                if (dataFromServer[0].equals("10")) {
                     // if eamil true and password wrong server send (10) , we can reset password for
                     // this
                     System.out.println("email true but password wrong");
                     JOptionPane.showMessageDialog(signInFrm, "reset password");
                     // if response if 0 no user in the database
-                } else if (dataFromServer[0].equals("0")) {
+                }
+                if (dataFromServer[0].equals("0")) {
                     // becuse no email registerd in the database server send (0), we can create a
                     // new account or cancel
                     System.out.println("Email not found");
@@ -106,7 +113,8 @@ public class Client extends Thread {
                     signUpFrm.setVisible(false);
                     signIn.setVisible(true);
                     // if response is 000 email is use in the database
-                } else if (dataFromServer[0].equals("000")) {
+                }
+                if (dataFromServer[0].equals("000")) {
                     JOptionPane.showMessageDialog(signUpFrm, "Email is used use new email!!");
 
                 }
@@ -117,7 +125,8 @@ public class Client extends Thread {
                     MainFrm.projectListModel.addElement(dataFromServer[1]);
                     JOptionPane.showMessageDialog(mainFrm, "project created!");
                     System.out.println("project created done!!");
-                } else if (dataFromServer[0].equals("30")) {
+                }
+                if (dataFromServer[0].equals("30")) {
                     JOptionPane.showMessageDialog(mainFrm, "This project name is already used!");
                 }
 
@@ -139,15 +148,17 @@ public class Client extends Thread {
                 } else if (dataFromServer[0].equals("80")) {
                     JOptionPane.showMessageDialog(mainFrm, "No project for you");
                 }
+                // get the project memebers for the manager
                 if (dataFromServer[0].equals("61")) {
                     String t = "";
                     String pName = dataFromServer[1];
                     for (int i = 2; i < dataFromServer.length; i++) {
-//                        projectmembersListModel.addElement(dataFromServer[i]);
+                        // add the response to the t which is projetc members name and surname
                         t += dataFromServer[i] + "\n";
                     }
                     JOptionPane.showMessageDialog(projectFrm, "Members of projetct " + pName + "\n" + t);
-                } else if (dataFromServer[0].equals("60")) {
+                }
+                if (dataFromServer[0].equals("60")) {
                     JOptionPane.showMessageDialog(projectFrm, "Only Manager of project can see the project members!");
                 }
                 if (dataFromServer[0].equals("71")) {
@@ -163,8 +174,12 @@ public class Client extends Thread {
                 }
                 if (dataFromServer[0].equals("exitAcc")) {
                     mainFrm.setVisible(false);
-                    projectFrm.setVisible(false);
+                    this.disconnect();
                     System.exit(0);
+                }
+                if (dataFromServer[0].equals("getFile")) {
+                    String destination = "C:\\Users\\basha\\OneDrive\\Desktop\\networkProject\\sendingFile.txt";
+                    receiveFile(destination, dataFromServer[1]);
                 }
 
             } catch (IOException ex) {
@@ -173,31 +188,19 @@ public class Client extends Thread {
         }
     }
 
-    public void signInCorrect(String[] dataFromServer) {
-        // if email true and password true we know from the server message (11) , go to
-        // main page of the program
-        client.clientName = dataFromServer[1];
-        client.clientLastName = dataFromServer[2];
-        client.cleintEmail = dataFromServer[3];
-
-        MainFrm mainFrm = new MainFrm();
-        for (int i = 4; i < dataFromServer.length; i++) {
-            MainFrm.projectListModel.addElement(dataFromServer[i]);
-        }
-        System.out.println("email and passowrd true");
-
-        signInFrm.setVisible(false);
-        mainFrm.setVisible(true);
+    public void sendFile(String data) throws IOException {
+        out.writeUTF("getFile," + data);
     }
 
-//    public void sendFile(String filePath) throws FileNotFoundException, IOException {
-//        byte[] buffer = new byte[8192]; // Buffer size
-//        int bytesRead;
-//        FileInputStream fileInputStream = new FileInputStream(filePath);
-//        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-//            out.write(buffer, 0, bytesRead);
-//        }
-//    }
+    public void receiveFile(String filePath, String data) throws IOException {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            while ((data) != null) {
+                writer.write(data);
+                writer.newLine();
+            }
+        }
+    }
+
     public void sendMessageSolo(String message, String name, String lastName) {
         try {
             out.writeUTF("91," + name + "," + lastName + "," + message);
@@ -222,6 +225,23 @@ public class Client extends Thread {
         } catch (IOException ex) {
             Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void signInCorrect(String[] dataFromServer) {
+        // if email true and password true we know from the server message (11) , go to
+        // main page of the program
+        client.clientName = dataFromServer[1];
+        client.clientLastName = dataFromServer[2];
+        client.cleintEmail = dataFromServer[3];
+
+        MainFrm mainFrm = new MainFrm();
+        for (int i = 4; i < dataFromServer.length; i++) {
+            MainFrm.projectListModel.addElement(dataFromServer[i]);
+        }
+        System.out.println("email and passowrd true");
+
+        signInFrm.setVisible(false);
+        mainFrm.setVisible(true);
     }
 
     public void Listen() {

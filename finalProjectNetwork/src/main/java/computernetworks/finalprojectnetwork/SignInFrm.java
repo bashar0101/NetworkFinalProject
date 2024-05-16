@@ -4,8 +4,6 @@
  */
 package computernetworks.finalprojectnetwork;
 
-import javax.swing.JOptionPane;
-
 /**
  *
  * @author basha
@@ -23,6 +21,8 @@ public class SignInFrm extends javax.swing.JFrame {
 
     public SignInFrm() {
         initComponents();
+        // my aws instance ip is 16.171.143.43
+//        client = new Client("16.171.143.43", 5000);
         client = new Client("localhost", 5000);
         client.ConnectToServer();
         client.Listen();
@@ -49,7 +49,6 @@ public class SignInFrm extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sign In");
         setLocation(new java.awt.Point(100, 100));
 

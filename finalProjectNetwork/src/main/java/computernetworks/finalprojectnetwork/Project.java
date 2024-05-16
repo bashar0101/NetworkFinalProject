@@ -17,12 +17,10 @@ public class Project {
     String projectName;
     String projectManager;
     String projectServerKey;
-    ArrayList<Client> projectMembers;
 
     public Project(String projectName, String projectManager) {
         this.projectName = projectName;
         this.projectManager = projectManager;
-        this.projectMembers = new ArrayList<>();
     }
 
 }

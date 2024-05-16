@@ -33,7 +33,7 @@
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Component id="fileTextField" min="-2" pref="346" max="-2" attributes="0"/>
                   </Group>
-                  <Component id="jToggleButton4" min="-2" max="-2" attributes="0"/>
+                  <Component id="sendFileBtn" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
@@ -70,9 +70,9 @@
                       </Group>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="jToggleButton2" min="-2" max="-2" attributes="0"/>
+                          <Component id="getConnectedClientBtn" min="-2" max="-2" attributes="0"/>
                           <Component id="jScrollPane3" min="-2" pref="183" max="-2" attributes="0"/>
-                          <Component id="jToggleButton1" min="-2" pref="183" max="-2" attributes="0"/>
+                          <Component id="getProjectMembersBtn" min="-2" pref="183" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace min="-2" pref="132" max="-2" attributes="0"/>
                   </Group>
@@ -85,7 +85,7 @@
                               <Component id="nameLabel" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
-                              <Component id="sendBroadcast" min="-2" max="-2" attributes="0"/>
+                              <Component id="sendBroadcastBtn" min="-2" max="-2" attributes="0"/>
                               <EmptySpace type="separate" max="-2" attributes="0"/>
                               <Component id="sendSoloBtn" min="-2" pref="138" max="-2" attributes="0"/>
                           </Group>
@@ -130,9 +130,9 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Component id="jScrollPane1" min="-2" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
-                      <Component id="jToggleButton2" min="-2" max="-2" attributes="0"/>
+                      <Component id="getConnectedClientBtn" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="separate" max="-2" attributes="0"/>
-                      <Component id="jToggleButton1" min="-2" max="-2" attributes="0"/>
+                      <Component id="getProjectMembersBtn" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
@@ -153,7 +153,7 @@
               </Group>
               <EmptySpace pref="12" max="32767" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
-                  <Component id="sendBroadcast" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="sendBroadcastBtn" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="sendSoloBtn" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="41" max="-2" attributes="0"/>
@@ -162,7 +162,7 @@
                   <Component id="fileTextField" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="separate" max="-2" attributes="0"/>
-              <Component id="jToggleButton4" min="-2" max="-2" attributes="0"/>
+              <Component id="sendFileBtn" min="-2" max="-2" attributes="0"/>
               <EmptySpace min="-2" pref="45" max="-2" attributes="0"/>
           </Group>
       </Group>
@@ -184,12 +184,12 @@
         </Component>
       </SubComponents>
     </Container>
-    <Component class="javax.swing.JButton" name="sendBroadcast">
+    <Component class="javax.swing.JButton" name="sendBroadcastBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Send Message "/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendBroadcastActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendBroadcastBtnActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="projectTitle">
@@ -243,20 +243,20 @@
         <Property name="text" type="java.lang.String" value="Online clients"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="jToggleButton1">
+    <Component class="javax.swing.JToggleButton" name="getProjectMembersBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="getProjectMembers"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton1ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getProjectMembersBtnActionPerformed"/>
       </Events>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="jToggleButton2">
+    <Component class="javax.swing.JToggleButton" name="getConnectedClientBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="get Connected Clinets"/>
       </Properties>
       <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jToggleButton2ActionPerformed"/>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="getConnectedClientBtnActionPerformed"/>
       </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel2">
@@ -301,10 +301,13 @@
         <Property name="text" type="java.lang.String" value="nameLabel"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JToggleButton" name="jToggleButton4">
+    <Component class="javax.swing.JToggleButton" name="sendFileBtn">
       <Properties>
         <Property name="text" type="java.lang.String" value="Send Selected File"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="sendFileBtnActionPerformed"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="jButton1">
       <Properties>

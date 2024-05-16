@@ -18,7 +18,6 @@ public class MainFrm extends javax.swing.JFrame {
      * Creates new form MainFrm
      */
     public static String projectName;
-    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     public static Project project;
     public static DefaultListModel projectListModel = new DefaultListModel();
     Client client;
@@ -49,9 +48,9 @@ public class MainFrm extends javax.swing.JFrame {
         UserNameSurname = new javax.swing.JLabel();
         UserEmail = new javax.swing.JLabel();
         ceartProjectBtn = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        joinProjectButton = new javax.swing.JButton();
+        getProjectkeyButton = new javax.swing.JButton();
+        exitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Project Managment");
@@ -80,24 +79,24 @@ public class MainFrm extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Join Project");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        joinProjectButton.setText("Join Project");
+        joinProjectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                joinProjectButtonActionPerformed(evt);
             }
         });
 
-        jButton2.setText("Project Key");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
+        getProjectkeyButton.setText("Project Key");
+        getProjectkeyButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
+                getProjectkeyButtonActionPerformed(evt);
             }
         });
 
-        jButton3.setText("Exit");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
+        exitButton.setText("Exit");
+        exitButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
+                exitButtonActionPerformed(evt);
             }
         });
 
@@ -115,11 +114,11 @@ public class MainFrm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(74, 74, 74)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(jButton3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(exitButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                                 .addComponent(ceartProjectBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
+                                .addComponent(joinProjectButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(getProjectkeyButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -138,14 +137,14 @@ public class MainFrm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(UserEmail)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton2)
+                        .addComponent(getProjectkeyButton)
                         .addGap(36, 36, 36)
-                        .addComponent(jButton1)
+                        .addComponent(joinProjectButton)
                         .addGap(29, 29, 29)
                         .addComponent(ceartProjectBtn))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
-                .addComponent(jButton3)
+                .addComponent(exitButton)
                 .addContainerGap(25, Short.MAX_VALUE))
         );
 
@@ -154,8 +153,8 @@ public class MainFrm extends javax.swing.JFrame {
 
     private void ceartProjectBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ceartProjectBtnActionPerformed
         // TODO add your handling code here:
+        // we will send the request of the client starts with the needed operation
         String pName = JOptionPane.showInputDialog(this, "Enter project Name?");
-        String serverKey = "";
         data = "";
         data += "3";
         // we will send the name of the project and the manager of theproject 
@@ -163,12 +162,7 @@ public class MainFrm extends javax.swing.JFrame {
         data += client.cleintEmail;
         data += ",";
         data += pName;
-
-        // project manager
         client.sendDataToServer(data);
-//        String[] serverReponses = client.serverResponse.split(",");
-
-
     }//GEN-LAST:event_ceartProjectBtnActionPerformed
 
     private void clientProjectsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_clientProjectsListMouseClicked
@@ -179,10 +173,11 @@ public class MainFrm extends javax.swing.JFrame {
 
     }//GEN-LAST:event_clientProjectsListMouseClicked
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void joinProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinProjectButtonActionPerformed
         // TODO add your handling code here:
         String projectName = JOptionPane.showInputDialog(this, "Enter the name of the project!");
         String projectKey = JOptionPane.showInputDialog(this, "Enter the key of the project!");
+        // we will send the request of the client starts with the needed operation
         data = "";
         data += "4";
         data += ",";
@@ -195,9 +190,9 @@ public class MainFrm extends javax.swing.JFrame {
 
 //        String[] serverReponses = client.serverResponse.split(",");
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_joinProjectButtonActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    private void getProjectkeyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_getProjectkeyButtonActionPerformed
         // TODO add your handling code here:
         data = "";
         data += "8";
@@ -205,10 +200,11 @@ public class MainFrm extends javax.swing.JFrame {
         data += client.cleintEmail;
         client.sendDataToServer(data);
 
-    }//GEN-LAST:event_jButton2ActionPerformed
+    }//GEN-LAST:event_getProjectkeyButtonActionPerformed
 
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+    private void exitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitButtonActionPerformed
         // TODO add your handling code here:
+        // if we want to exit we will send exit word to the server
         data = "";
         data += "exit,";
         data += client.cleintEmail;
@@ -216,7 +212,7 @@ public class MainFrm extends javax.swing.JFrame {
         client.sendDataToServer(data);
 
 
-    }//GEN-LAST:event_jButton3ActionPerformed
+    }//GEN-LAST:event_exitButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -258,10 +254,10 @@ public class MainFrm extends javax.swing.JFrame {
     private javax.swing.JLabel UserNameSurname;
     private javax.swing.JButton ceartProjectBtn;
     private javax.swing.JList<String> clientProjectsList;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
+    private javax.swing.JButton exitButton;
+    private javax.swing.JButton getProjectkeyButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JButton joinProjectButton;
     // End of variables declaration//GEN-END:variables
 }

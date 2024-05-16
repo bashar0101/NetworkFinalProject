@@ -4,17 +4,17 @@
  */
 package computernetworks.finalprojectnetwork;
 
-import static computernetworks.finalprojectnetwork.ProjectFrm.comingMessagesListModel;
 import static computernetworks.finalprojectnetwork.Server.connectedClients;
 import static computernetworks.finalprojectnetwork.Server.ipAddress;
-//import static computernetworks.finalprojectnetwork.Server.port;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -48,6 +48,7 @@ public class Server extends Thread {
 
     }
 
+    // we screate our server here
     public boolean Create(int port) {
         try {
             this.port = port;
@@ -66,6 +67,7 @@ public class Server extends Thread {
         this.start();
     }
 
+    // listen for clients 
     @Override
     public void run() {
         while (isListening) {
@@ -86,14 +88,9 @@ public class Server extends Thread {
 
     public static void main(String[] args) {
         Server server = new Server();
+        // use port 5000
         server.Create(5000);
         server.Listen();
-    }
-
-    public static void getConnectedClients() {
-        for (Client client : connectedClients) {
-            System.out.println(client.socket.getInetAddress() + ":" + client.socket.getPort());
-        }
     }
 
     // this function will stop the server
@@ -105,39 +102,35 @@ public class Server extends Thread {
             Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-
-// public void DicconnectClient(Client client) {
-// this.connectedClients.remove(client);
-// ServerFrm.clientsListModel.removeAllElements();
-// for (ClientHandler sClient : connectedClients) {
-// String cinfo = sClient.client.getInetAddress().toString() + ":" +
-// sClient.client.getPort();
-// ServerFrm.clientsListModel.addElement(cinfo);
-// }
-//
-// }
 }
 
+// this class to handle the clients 
 class ClientHandler extends Thread {
 
     Client client;
     // Socket client;
     DataInputStream in;
     DataOutputStream out;
+    // the running server is used 
     Server server;
+    // information for the used dataabse 
+    // i used mysql datbase (database name cmpy)
     public String url = "jdbc:mysql://localhost:3306/cmpy";
     public String username = "root";
     public String password = "20142007";
 
+    // the clientHandletr object should know the server and the 
     ClientHandler(Socket clientSocket, Server server) {
         try {
-            // the client will
             this.server = server;
+            // the client here will have the same ip and port of the client in the sign in frame
             client = new Client("localhost", 5000);
+
             this.client.socket = clientSocket;
-            System.out.println("-------------------" + client.socket.getPort());
+//            System.out.println("-------------------" + client.socket.getPort());
             in = new DataInputStream(client.socket.getInputStream());
             out = new DataOutputStream(client.socket.getOutputStream());
+            // add the client to the connected client list in server
             Server.connectedClients.add(client);
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
@@ -152,62 +145,72 @@ class ClientHandler extends Thread {
     public void handleClient(Socket clientSocket) {
         while (true) {
             try {
-
+                // the coming message from client
                 String clientMessage = in.readUTF();
                 /// this is the messsage from the client we will check like four things
                 // 1 if the message starts with one it means clients want to sign in
 
                 System.out.println("Message form client" + clientSocket.getInetAddress().toString() + ":"
-                        + clientSocket.getPort());
-                System.out.println(clientMessage);
+                        + clientSocket.getPort() + "-->" + clientMessage);
+                // each message contains a code for the function the client want to be done
+
+                // the client will send the data splited by , 
                 // we will split the data came from the client
-
                 String[] data = clientMessage.split(",");
-
+                // the first value in the client messag is operation code 
                 String operationCode = data[0];
-                // sign in section 1 means sigin in
+                // sign in section 1 means sign in
                 if (operationCode.equals("1")) {
                     String email = data[1];
                     String passwordData = data[2];
                     signIn(email, passwordData);
 
-                } // sign ups section
-                else if (operationCode.equals("2")) {
+                } // sign up section 2 means sign up
+                if (operationCode.equals("2")) {
                     String name = data[1];
                     String lastName = data[2];
                     String email = data[3];
                     String passwordData = data[4];
                     signUp(name, lastName, email, passwordData);
 
-                } else if (operationCode.equals("3")) {
+                }// create porject 3 means create project
+                if (operationCode.equals("3")) {
                     String pEmail = data[1];
                     String pName = data[2];
                     createProject(pEmail, pName);
 
-                } else if (operationCode.equals("4")) {
+                }// join project is 4 
+                if (operationCode.equals("4")) {
                     String pName = data[1];
                     String pKey = data[2];
                     String clientEmail = data[3];
                     joinProject(pName, pKey, clientEmail);
 
-                } else if (operationCode.equals("5")) {
+                }// for sending message as broadcast is 5 
+                if (operationCode.equals("5")) {
                     String pName = data[1];
                     String senderName = data[2];
                     String senderLastname = data[3];
                     String message = data[4];
                     sendMessage(message, pName, senderName, senderLastname);
-                } else if (operationCode.equals("6")) {
+
+                }// to get the project memebrs for the manage of the projetc is 6
+                if (operationCode.equals("6")) {
                     String pName = data[1];
                     String email = data[2];
                     getProjectMembers(pName, email);
-
-                } else if (operationCode.equals("7")) {
+                    // to get online client of a project 
+                }
+                if (operationCode.equals("7")) {
                     String pName = data[1];
                     getOnlineClientsOfProject(pName);
-                } else if (operationCode.equals("8")) {
+
+                }// to get private code of the project for a manager projetc 8
+                if (operationCode.equals("8")) {
                     String email = data[1];
                     getProjectPrivateKey(email);
                 }
+                // to send message for a solo memebr in a project 9
                 if (operationCode.equals("9")) {
                     String pName = data[1];
                     String senderName = data[2];
@@ -215,15 +218,29 @@ class ClientHandler extends Thread {
                     String toSend = data[4];
                     String message = data[5];
                     sendMessageSolo(message, pName, senderName, csenderLastName, toSend);
-                }
+                }// if the messahe is exit means the client exit the progam 
                 if (operationCode.equals("exit")) {
                     String cEmail = data[1];
                     disconnectClient(cEmail);
                 }
-
+                if (operationCode.equals("getFile")) {
+                    String name = data[1];
+                    String lastName = data[2];
+                    String pName = data[3];
+                    String filePath = data[4];
+                    String fileString = data[5];
+                    sendFile(pName, name, lastName, filePath, fileString);
+                }
             } catch (IOException ex) {
                 Logger.getLogger(Server.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public void sendFile(String pName, String name, String lastName, String path, String fileContatn) throws IOException {
+        ArrayList<Client> c = getOnlineClientsInProject(pName);
+        for (Client connectedClient : c) {
+            connectedClient.sendFile(fileContatn);
         }
     }
 
@@ -240,13 +257,6 @@ class ClientHandler extends Thread {
         }
     }
 
-//    public void sendFile(String fielPath, String pName) throws IOException {
-//        ArrayList<Client> c = getOnlineClientsInProject(pName);
-//        for (Client connectedClient : c) {
-//            connectedClient.sendFile(fielPath);
-//            System.out.println("1");
-//        }
-//    }
     public void sendMessageSolo(String message, String pName, String senderName, String senderLastName, String toSend) {
         ArrayList<Client> c = getOnlineClientsInProject(pName);
         for (Client connectedClient : c) {
@@ -257,13 +267,13 @@ class ClientHandler extends Thread {
     }
 
     public void sendMessage(String message, String pName, String senderName, String senderLastName) {
-
         ArrayList<Client> c = getOnlineClientsInProject(pName);
         for (Client connectedClient : c) {
             connectedClient.sendMessage(message, senderName, senderLastName);
         }
     }
 
+    // get a client array list of the online members 
     public ArrayList<Client> getOnlineClientsInProject(String projectName) {
         ArrayList<Client> connectedClientsInProject = new ArrayList<>();
         StringBuilder fullNameBuilder = new StringBuilder();
@@ -299,48 +309,6 @@ class ClientHandler extends Thread {
         }
 
         return connectedClientsInProject;
-    }
-
-    public ArrayList getOnlineClientsOfProjectArray(String projectName) {
-        ArrayList<String> connectedClients = new ArrayList<>();
-        StringBuilder fullNameBuilder = new StringBuilder();
-        String dataToClient = "";
-        try {
-            Connection connection = DriverManager.getConnection(url, username, password);
-            String query = "SELECT clients.name, clients.surname\n"
-                    + "FROM userProjects\n"
-                    + "    JOIN clients ON userProjects.email = clients.email\n"
-                    + "WHERE\n"
-                    + "    userProjects.project_name = ?";
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setString(1, projectName);
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            while (resultSet.next()) {
-                String name = resultSet.getString("name");
-                String surname = resultSet.getString("surname");
-
-                fullNameBuilder.append(name).append(" ").append(surname).append(",");
-            }
-
-            String[] useres = fullNameBuilder.toString().split(",");
-            ArrayList<String> connectedToserver = new ArrayList<>();
-            for (int i = 0; i < Server.connectedClients.size(); i++) {
-                connectedToserver.add(Server.connectedClients.get(i).clientName + " " + Server.connectedClients.get(i).clientLastName);
-            }
-            for (int i = 0; i < useres.length; i++) {
-                for (int j = 0; j < connectedToserver.size(); j++) {
-                    if (useres[i].equals(connectedToserver.get(j))) {
-                        dataToClient += useres[i] + ",";
-                        connectedClients.add(dataToClient);
-                    }
-                }
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return connectedClients;
     }
 
     public void getOnlineClientsOfProject(String projectName) {
@@ -450,6 +418,7 @@ class ClientHandler extends Thread {
         return managerEmail;
     }
 
+    // this will add the information of the client to the projects by using the project name and email of the project creator
     private void createProject(String email, String projectName) {
         String randomKey = generateKey();
         String messageToserver = "";
@@ -579,6 +548,7 @@ class ClientHandler extends Thread {
 
                         String respone = "11";
                         respone += "," + nameTosend + "," + lastNameToSend + "," + emailToSend + ",";
+                        // this will send the project of all the memebrs when they sign in and add it to the list of My Projects
                         respone += getUserProjects(emailToSend);
                         out.writeUTF(respone);
                     } catch (IOException ex) {
@@ -715,6 +685,7 @@ class ClientHandler extends Thread {
         return isValid;
     }
 
+    // 
     private String getUserProjects(String email) {
         StringBuilder projectNameBuilder = new StringBuilder();
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
