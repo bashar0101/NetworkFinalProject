@@ -4,6 +4,8 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import static computernetworks.finalprojectnetwork.ProjectFrm.comingMessagesListModel;
+import static computernetworks.finalprojectnetwork.Server.connectedClients;
 import static computernetworks.finalprojectnetwork.Server.ipAddress;
 //import static computernetworks.finalprojectnetwork.Server.port;
 import java.io.DataInputStream;
@@ -12,6 +14,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.sql.Array;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -19,6 +22,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -37,11 +42,7 @@ public class Server extends Thread {
 
     DataInputStream in;
     DataOutputStream out;
-
-    // database information
-    public String url = "jdbc:mysql://localhost:3306/cmpy";
-    public String username = "root";
-    public String password = "20142007";
+    ClientHandler clientHandler;
 
     Server() {
 
@@ -61,10 +62,8 @@ public class Server extends Thread {
     }
 
     public void Listen() {
-
         this.isListening = true;
         this.start();
-
     }
 
     @Override
@@ -76,7 +75,7 @@ public class Server extends Thread {
                 String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
                 System.out.println("client connected to server ---> " + cinfo);
                 ServerFrm.clientsListModel.addElement(cinfo);
-                ClientHandler clientHandler = new ClientHandler(clientSocket);
+                clientHandler = new ClientHandler(clientSocket, this);
                 clientHandler.start();
 
             } catch (IOException ex) {
@@ -87,7 +86,7 @@ public class Server extends Thread {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.Create(222);
+        server.Create(5000);
         server.Listen();
     }
 
@@ -107,16 +106,16 @@ public class Server extends Thread {
         }
     }
 
-    // public void DicconnectClient(Client client) {
-    // this.connectedClients.remove(client);
-    // ServerFrm.clientsListModel.removeAllElements();
-    // for (ClientHandler sClient : connectedClients) {
-    // String cinfo = sClient.client.getInetAddress().toString() + ":" +
-    // sClient.client.getPort();
-    // ServerFrm.clientsListModel.addElement(cinfo);
-    // }
-    //
-    // }
+// public void DicconnectClient(Client client) {
+// this.connectedClients.remove(client);
+// ServerFrm.clientsListModel.removeAllElements();
+// for (ClientHandler sClient : connectedClients) {
+// String cinfo = sClient.client.getInetAddress().toString() + ":" +
+// sClient.client.getPort();
+// ServerFrm.clientsListModel.addElement(cinfo);
+// }
+//
+// }
 }
 
 class ClientHandler extends Thread {
@@ -125,16 +124,18 @@ class ClientHandler extends Thread {
     // Socket client;
     DataInputStream in;
     DataOutputStream out;
-
+    Server server;
     public String url = "jdbc:mysql://localhost:3306/cmpy";
     public String username = "root";
     public String password = "20142007";
 
-    ClientHandler(Socket clientSocket) {
+    ClientHandler(Socket clientSocket, Server server) {
         try {
             // the client will
-            client = new Client("localhost", 222);
+            this.server = server;
+            client = new Client("localhost", 5000);
             this.client.socket = clientSocket;
+            System.out.println("-------------------" + client.socket.getPort());
             in = new DataInputStream(client.socket.getInputStream());
             out = new DataOutputStream(client.socket.getOutputStream());
             Server.connectedClients.add(client);
@@ -181,22 +182,39 @@ class ClientHandler extends Thread {
                 } else if (operationCode.equals("3")) {
                     String pEmail = data[1];
                     String pName = data[2];
-                    String userName = data[3];
-                    String userLastName = data[4];
-                    createProject(userName, userLastName, pEmail, pName);
+                    createProject(pEmail, pName);
 
                 } else if (operationCode.equals("4")) {
                     String pName = data[1];
                     String pKey = data[2];
-                    String clientName = data[3];
-                    String clientLastName = data[4];
-                    String clientEmail = data[5];
-                    joinProject(pName, pKey, clientName, clientLastName, clientEmail);
+                    String clientEmail = data[3];
+                    joinProject(pName, pKey, clientEmail);
 
                 } else if (operationCode.equals("5")) {
                     String pName = data[1];
-                    String message = data[2];
-                    sendMessage(pName, message);
+                    String senderName = data[2];
+                    String senderLastname = data[3];
+                    String message = data[4];
+                    sendMessage(message, pName, senderName, senderLastname);
+                } else if (operationCode.equals("6")) {
+                    String pName = data[1];
+                    String email = data[2];
+                    getProjectMembers(pName, email);
+
+                } else if (operationCode.equals("7")) {
+                    String pName = data[1];
+                    getOnlineClientsOfProject(pName);
+                } else if (operationCode.equals("8")) {
+                    String email = data[1];
+                    getProjectPrivateKey(email);
+                }
+                if (operationCode.equals("9")) {
+                    String pName = data[1];
+                    String senderName = data[2];
+                    String csenderLastName = data[3];
+                    String toSend = data[4];
+                    String message = data[5];
+                    sendMessageSolo(message, pName, senderName, csenderLastName, toSend);
                 }
 
             } catch (IOException ex) {
@@ -205,47 +223,220 @@ class ClientHandler extends Thread {
         }
     }
 
-    private synchronized void sendMessage(String pName, String message) {
-        // i will send the massege to all clients they are in the same project and the
-        // are conneccted online
-        try {
-            Connection conn = DriverManager.getConnection(url, username, password);
-            String query = "SELECT email FROM userProjects WHERE project_name = ?";
-            PreparedStatement stmt = conn.prepareStatement(query);
-            // Set the project name parameter in the prepared statement
-            stmt.setString(1, pName);
-            // Execute the query
-            ResultSet rs = stmt.executeQuery();
+//    public void sendFile(String fielPath, String pName) throws IOException {
+//        ArrayList<Client> c = getOnlineClientsInProject(pName);
+//        for (Client connectedClient : c) {
+//            connectedClient.sendFile(fielPath);
+//            System.out.println("1");
+//        }
+//    }
 
-            // Iterate over the result set and print user details
-            while (rs.next()) {
-                String email = rs.getString("email");
-                for (Client client : Server.connectedClients) {
-                    if (email.equals(client.cleintEmail)) {
-                        try {
-                            out.writeUTF("51");
-                            out.writeUTF(message);
-                        } catch (IOException ex) {
-                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } else {
-                        try {
-                            out.writeUTF("50");
-                        } catch (IOException ex) {
-                            Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
-                        }
+    public void sendMessageSolo(String message, String pName, String senderName, String senderLastName, String toSend) {
+        ArrayList<Client> c = getOnlineClientsInProject(pName);
+        for (Client connectedClient : c) {
+            if ((connectedClient.clientName + " " + connectedClient.clientLastName).equals(toSend)) {
+                connectedClient.sendMessageSolo(message, senderName, senderLastName);
+                System.out.println("1");
+            }
+        }
+    }
+
+    public void sendMessage(String message, String pName, String senderName, String senderLastName) {
+
+        ArrayList<Client> c = getOnlineClientsInProject(pName);
+        for (Client connectedClient : c) {
+            connectedClient.sendMessage(message, senderName, senderLastName);
+            System.out.println("1");
+        }
+    }
+
+    public ArrayList<Client> getOnlineClientsInProject(String projectName) {
+        ArrayList<Client> connectedClientsInProject = new ArrayList<>();
+        StringBuilder fullNameBuilder = new StringBuilder();
+
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String query = "SELECT clients.name, clients.surname "
+                    + "FROM userProjects "
+                    + "JOIN clients ON userProjects.email = clients.email "
+                    + "WHERE userProjects.project_name = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, projectName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String surname = resultSet.getString("surname");
+                fullNameBuilder.append(name).append(" ").append(surname).append(",");
+            }
+
+            String[] users = fullNameBuilder.toString().split(",");
+            HashSet<String> projectMembersSet = new HashSet<>(Arrays.asList(users));
+
+            for (Client client : Server.connectedClients) {
+                String clientFullName = client.clientName + " " + client.clientLastName;
+                if (projectMembersSet.contains(clientFullName)) {
+                    connectedClientsInProject.add(client);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return connectedClientsInProject;
+    }
+
+    public ArrayList getOnlineClientsOfProjectArray(String projectName) {
+        ArrayList<String> connectedClients = new ArrayList<>();
+        StringBuilder fullNameBuilder = new StringBuilder();
+        String dataToClient = "";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String query = "SELECT clients.name, clients.surname\n"
+                    + "FROM userProjects\n"
+                    + "    JOIN clients ON userProjects.email = clients.email\n"
+                    + "WHERE\n"
+                    + "    userProjects.project_name = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, projectName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String surname = resultSet.getString("surname");
+
+                fullNameBuilder.append(name).append(" ").append(surname).append(",");
+            }
+
+            String[] useres = fullNameBuilder.toString().split(",");
+            ArrayList<String> connectedToserver = new ArrayList<>();
+            for (int i = 0; i < Server.connectedClients.size(); i++) {
+                connectedToserver.add(Server.connectedClients.get(i).clientName + " " + Server.connectedClients.get(i).clientLastName);
+            }
+            for (int i = 0; i < useres.length; i++) {
+                for (int j = 0; j < connectedToserver.size(); j++) {
+                    if (useres[i].equals(connectedToserver.get(j))) {
+                        dataToClient += useres[i] + ",";
+                        connectedClients.add(dataToClient);
                     }
                 }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return connectedClients;
+    }
+
+    public void getOnlineClientsOfProject(String projectName) {
+        StringBuilder fullNameBuilder = new StringBuilder();
+        String dataToClient = "";
+        try {
+            Connection connection = DriverManager.getConnection(url, username, password);
+            String query = "SELECT clients.name, clients.surname\n"
+                    + "FROM userProjects\n"
+                    + "    JOIN clients ON userProjects.email = clients.email\n"
+                    + "WHERE\n"
+                    + "    userProjects.project_name = ?";
+            PreparedStatement preparedStatement = connection.prepareStatement(query);
+            preparedStatement.setString(1, projectName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                String surname = resultSet.getString("surname");
+
+                fullNameBuilder.append(name).append(" ").append(surname).append(",");
+            }
+
+            String[] useres = fullNameBuilder.toString().split(",");
+            ArrayList<String> connectedToserver = new ArrayList<>();
+            for (int i = 0; i < Server.connectedClients.size(); i++) {
+                connectedToserver.add(Server.connectedClients.get(i).clientName + " " + Server.connectedClients.get(i).clientLastName);
+            }
+            for (int i = 0; i < useres.length; i++) {
+                for (int j = 0; j < connectedToserver.size(); j++) {
+                    if (useres[i].equals(connectedToserver.get(j))) {
+                        System.out.println("User" + useres[i]);
+                        dataToClient += useres[i] + ",";
+                    }
+                }
+            }
+
+            try {
+                out.writeUTF("71," + dataToClient);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    // here tommorw
-    // when we create new project we should add the user to the userProjects table
-    // at the same time
-    private synchronized void createProject(String userName, String userLastName, String email, String projectName) {
+    private ArrayList getProjectMembers(String projectName, String email) {
+        ArrayList<String> pMembers = new ArrayList<>();
+        String dataToSend = "";
+        if (getProjectManagerEmail(projectName).equals(email)) {
+            try {
+                Connection connection = DriverManager.getConnection(url, username, password);
+                String query = "SELECT clients.name, clients.surname\n"
+                        + "FROM userProjects\n"
+                        + "    JOIN clients ON userProjects.email = clients.email\n"
+                        + "WHERE\n"
+                        + "    userProjects.project_name = ?";
+                PreparedStatement preparedStatement = connection.prepareStatement(query);
+                preparedStatement.setString(1, projectName);
+                ResultSet resultSet = preparedStatement.executeQuery();
+
+                while (resultSet.next()) {
+                    String name = resultSet.getString("name");
+                    String surname = resultSet.getString("surname");
+//                    fullNameBuilder.append(name).append(" ").append(surname).append(",");
+                    pMembers.add(name + " " + surname + ",");
+                    dataToSend += name + " " + surname + ",";
+                }
+
+                try {
+                    out.writeUTF("61," + projectName + "," + dataToSend);
+                } catch (IOException ex) {
+                    Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                out.writeUTF("60");
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        return pMembers;
+    }
+
+    private String getProjectManagerEmail(String projectName) {
+        String query = "SELECT manager_email FROM Projects WHERE project_name = ?";
+        String managerEmail = null;
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+                PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setString(1, projectName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                managerEmail = resultSet.getString("manager_email");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return managerEmail;
+    }
+
+    private void createProject(String email, String projectName) {
         String randomKey = generateKey();
         String messageToserver = "";
         try {
@@ -261,9 +452,11 @@ class ClientHandler extends Thread {
             try {
                 // increaseProjectusers(projectName);
                 // here we will generate a random key for entering the project
-                addUserToProject(userName, userLastName, email, projectName);
+                addUserToProject(email, projectName);
                 messageToserver = "";
                 messageToserver += "31,";
+                messageToserver += projectName;
+                messageToserver += ",";
                 messageToserver += randomKey;
                 out.writeUTF(messageToserver);
             } catch (IOException ex) {
@@ -284,8 +477,14 @@ class ClientHandler extends Thread {
 
     }
 
-    private synchronized void signUp(String name, String lastName, String email, String passwordData) {
+    private void signUp(String name, String lastName, String email, String passwordData) {
         // Sign up logic
+        this.client.clientName = name;
+        this.client.clientLastName = lastName;
+        this.client.cleintEmail = email;
+        this.client.in = in;
+        this.client.out = out;
+
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
             String checkIfExistsSql = "SELECT COUNT(*) AS count FROM clients WHERE email = ?";
@@ -337,8 +536,10 @@ class ClientHandler extends Thread {
         }
     }
 
-    private synchronized void signIn(String email, String passwordData) {
+    private void signIn(String email, String passwordData) {
         // Sign in logic
+        this.client.in = in;
+        this.client.out = out;
         try {
             Connection connection = DriverManager.getConnection(url, username, password);
             String sql = "SELECT * FROM clients WHERE email = ?";
@@ -358,6 +559,9 @@ class ClientHandler extends Thread {
                         String nameTosend = resultSet.getString("name");
                         String lastNameToSend = resultSet.getString("surname");
                         String emailToSend = resultSet.getString("email");
+                        this.client.clientName = nameTosend;
+                        this.client.clientLastName = lastNameToSend;
+                        this.client.cleintEmail = emailToSend;
 
                         String respone = "11";
                         respone += "," + nameTosend + "," + lastNameToSend + "," + emailToSend + ",";
@@ -395,18 +599,28 @@ class ClientHandler extends Thread {
         }
     }
 
-    private String getProjectPrivateKey(String email) {
-        String key = "";
+    private void getProjectPrivateKey(String email) {
+        String toSend = "";
         try {
             Connection conn = DriverManager.getConnection(url, username, password);
-            String sql = "SELECT project_key FROM Projects WHERE manager_email = ?";
+            String sql = "SELECT project_name, project_key FROM Projects WHERE manager_email = ?";
             PreparedStatement statement = conn.prepareStatement(sql);
             statement.setString(1, email);
             ResultSet resultSet = statement.executeQuery();
 
-            if (resultSet.next()) {
-                key = "-->";
-                key += resultSet.getString("project_key");
+            while (resultSet.next()) {
+                String projectname = resultSet.getString("project_name");
+                String key = resultSet.getString("project_key");
+                toSend += projectname + "->" + key + ",";
+            }
+            try {
+                if (!toSend.equals("")) {
+                    out.writeUTF("81," + toSend);
+                } else {
+                    out.writeUTF("80");
+                }
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
             resultSet.close();
             statement.close();
@@ -415,7 +629,6 @@ class ClientHandler extends Thread {
             // Handle any SQL errors
             e.printStackTrace();
         }
-        return key;
     }
 
     private String generateKey() {
@@ -431,25 +644,30 @@ class ClientHandler extends Thread {
         return key.toString();
     }
 
-    private synchronized void joinProject(String pName, String projectKey, String name, String lastName, String email)
-            throws IOException {
+    private void joinProject(String pName, String projectKey, String email) {
         if (checkProjectKey(pName, projectKey)) {
-            addUserToProject(name, lastName, email, pName);
-            System.out.println(name + "Join the project " + pName);
-            out.writeUTF("41");
+            try {
+                addUserToProject(email, pName);
+                System.out.println("The user withe email : " + email + " Join the project " + pName);
+                out.writeUTF("41," + pName);
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         } else {
-            out.writeUTF("40");
+            try {
+                out.writeUTF("40");
+            } catch (IOException ex) {
+                Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 
-    public synchronized void addUserToProject(String name, String lastName, String email, String pName) {
+    public void addUserToProject(String email, String pName) {
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
-            String insertQuery = "INSERT INTO userProjects (name, last_name, email, project_name) VALUES (?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO userProjects (email, project_name) VALUES (?, ?)";
             try (PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
-                pstmt.setString(1, name);
-                pstmt.setString(2, lastName);
-                pstmt.setString(3, email);
-                pstmt.setString(4, pName);
+                pstmt.setString(1, email);
+                pstmt.setString(2, pName);
 
                 int rowsAffected = pstmt.executeUpdate();
                 if (rowsAffected > 0) {
@@ -464,7 +682,7 @@ class ClientHandler extends Thread {
         }
     }
 
-    public synchronized boolean checkProjectKey(String projectName, String projectKey) {
+    public boolean checkProjectKey(String projectName, String projectKey) {
         boolean isValid = false;
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             String selectQuery = "SELECT project_key FROM Projects WHERE project_name = ?";
@@ -483,7 +701,7 @@ class ClientHandler extends Thread {
         return isValid;
     }
 
-    private synchronized String getUserProjects(String email) {
+    private String getUserProjects(String email) {
         StringBuilder projectNameBuilder = new StringBuilder();
         try (Connection conn = DriverManager.getConnection(url, username, password)) {
             String selectQuery = "SELECT project_name FROM userProjects WHERE email = ?";
@@ -501,10 +719,6 @@ class ClientHandler extends Thread {
             System.out.println("Failed to retrieve user projects");
         }
         return projectNameBuilder.toString();
-    }
-
-    private synchronized void getProjectMembers(String pName) {
-
     }
 
 }

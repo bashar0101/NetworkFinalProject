@@ -17,7 +17,7 @@ public class MainFrm extends javax.swing.JFrame {
     /**
      * Creates new form MainFrm
      */
-    public static String projectName;
+    public static String projectName;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
     public static Project project;
     public static DefaultListModel projectListModel = new DefaultListModel();
     Client client;
@@ -26,6 +26,7 @@ public class MainFrm extends javax.swing.JFrame {
     public MainFrm() {
         initComponents();
         clientProjectsList.setModel(projectListModel);
+        Client.mainFrm = this;
         client = SignInFrm.client;
         UserNameSurname.setText("User : " + client.clientName + " " + client.clientLastName);
         UserEmail.setText("User Email : " + client.cleintEmail);
@@ -48,9 +49,11 @@ public class MainFrm extends javax.swing.JFrame {
         UserEmail = new javax.swing.JLabel();
         ceartProjectBtn = new javax.swing.JButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Project Managment");
+        setLocation(new java.awt.Point(400, 400));
 
         clientProjectsList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -82,6 +85,13 @@ public class MainFrm extends javax.swing.JFrame {
             }
         });
 
+        jButton2.setText("Project Key");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -97,12 +107,13 @@ public class MainFrm extends javax.swing.JFrame {
                         .addGap(74, 74, 74)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(ceartProjectBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 235, Short.MAX_VALUE)
+                            .addComponent(jButton1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(55, 55, 55))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 205, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel1))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -116,8 +127,10 @@ public class MainFrm extends javax.swing.JFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(UserEmail)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jButton2)
+                        .addGap(36, 36, 36)
                         .addComponent(jButton1)
-                        .addGap(81, 81, 81)
+                        .addGap(29, 29, 29)
                         .addComponent(ceartProjectBtn))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 318, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(72, Short.MAX_VALUE))
@@ -137,25 +150,10 @@ public class MainFrm extends javax.swing.JFrame {
         data += client.cleintEmail;
         data += ",";
         data += pName;
-        data += ",";
-        data += client.clientName;
-        data += ",";
-        data += client.clientLastName;
 
         // project manager
-        client.createProject(data);
-        String[] serverReponses = client.serverResponse.split(",");
-
-        if (serverReponses[0].equals("31")) {
-            project = new Project(pName, client.clientName);
-            serverKey = serverReponses[0];
-            project.projectServerKey = serverKey;
-            MainFrm.projectListModel.addElement(pName + " ---> " + serverReponses[1]);
-            JOptionPane.showMessageDialog(this, "project created!");
-            System.out.println("project created done!!");
-        } else if (serverReponses[0].equals("30")) {
-            JOptionPane.showMessageDialog(this, "This project name is already used!");
-        }
+        client.sendDataToServer(data);
+//        String[] serverReponses = client.serverResponse.split(",");
 
 
     }//GEN-LAST:event_ceartProjectBtnActionPerformed
@@ -179,24 +177,22 @@ public class MainFrm extends javax.swing.JFrame {
         data += ",";
         data += projectKey;
         data += ",";
-        data += client.clientName;
-        data += ",";
-        data += client.clientLastName;
-        data += ",";
         data += client.cleintEmail;
-        client.joinClientProject(data);
+        client.sendDataToServer(data);
 
-        String[] serverReponses = client.serverResponse.split(",");
-        if (serverReponses[0].equals("41")) {
-
-            MainFrm.projectListModel.addElement(projectName);
-//            Project.connectedToPRojectClients.add(client.socket);
-            JOptionPane.showMessageDialog(this, "Join the project succefully!");
-        } else if (serverReponses[0].equals("40")) {
-            JOptionPane.showMessageDialog(this, "Did not joined the project!");
-        }
+//        String[] serverReponses = client.serverResponse.split(",");
 
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        data = "";
+        data += "8";
+        data += ",";
+        data += client.cleintEmail;
+        client.sendDataToServer(data);
+
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -239,6 +235,7 @@ public class MainFrm extends javax.swing.JFrame {
     private javax.swing.JButton ceartProjectBtn;
     private javax.swing.JList<String> clientProjectsList;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables

@@ -4,7 +4,10 @@
  */
 package computernetworks.finalprojectnetwork;
 
+import java.io.File;
 import javax.swing.DefaultListModel;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -15,7 +18,10 @@ public class ProjectFrm extends javax.swing.JFrame {
     Client client;
     static String data = "";
     public static DefaultListModel comingMessagesListModel = new DefaultListModel();
+//    public static DefaultListModel projectmembersListModel = new DefaultListModel();
+    public static DefaultListModel projeConnectedClientsModel = new DefaultListModel();
     String projectName;
+    Server server = ServerFrm.server;
 
     /**
      * Creates new form ProjectFrm
@@ -23,9 +29,14 @@ public class ProjectFrm extends javax.swing.JFrame {
     public ProjectFrm() {
         initComponents();
         client = SignInFrm.client;
+        nameLabel.setText(client.clientName);
         comingMessageList.setModel(comingMessagesListModel);
+//        projectMembersList.setModel(projectmembersListModel);
+        onlineClients.setModel(projeConnectedClientsModel);
         projectName = MainFrm.projectName;
         projectTitle.setText(projectName);
+        Client.projectFrm = this;
+
     }
 
     /**
@@ -39,24 +50,36 @@ public class ProjectFrm extends javax.swing.JFrame {
 
         jScrollPane1 = new javax.swing.JScrollPane();
         sendMessageField = new javax.swing.JTextArea();
-        jButton1 = new javax.swing.JButton();
+        sendBroadcast = new javax.swing.JButton();
         projectTitle = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         comingMessageList = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         onlineClients = new javax.swing.JList<>();
         jLabel1 = new javax.swing.JLabel();
+        jToggleButton1 = new javax.swing.JToggleButton();
+        jToggleButton2 = new javax.swing.JToggleButton();
+        jLabel2 = new javax.swing.JLabel();
+        jToggleButton3 = new javax.swing.JToggleButton();
+        jButton2 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+        sendSoloBtn = new javax.swing.JButton();
+        nameLabel = new javax.swing.JLabel();
+        jToggleButton4 = new javax.swing.JToggleButton();
+        jButton1 = new javax.swing.JButton();
+        fileTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setLocation(new java.awt.Point(300, 50));
 
         sendMessageField.setColumns(20);
         sendMessageField.setRows(5);
         jScrollPane1.setViewportView(sendMessageField);
 
-        jButton1.setText("Send Message ");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        sendBroadcast.setText("Send Message ");
+        sendBroadcast.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                sendBroadcastActionPerformed(evt);
             }
         });
 
@@ -69,6 +92,61 @@ public class ProjectFrm extends javax.swing.JFrame {
 
         jLabel1.setText("Online clients");
 
+        jToggleButton1.setText("getProjectMembers");
+        jToggleButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton1ActionPerformed(evt);
+            }
+        });
+
+        jToggleButton2.setText("get Connected Clinets");
+        jToggleButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton2ActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Messages");
+
+        jToggleButton3.setText("👍");
+        jToggleButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jToggleButton3ActionPerformed(evt);
+            }
+        });
+
+        jButton2.setText("🔥");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+
+        jButton3.setText("😀");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+
+        sendSoloBtn.setText("Send Solo");
+        sendSoloBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendSoloBtnActionPerformed(evt);
+            }
+        });
+
+        nameLabel.setText("nameLabel");
+
+        jToggleButton4.setText("Send Selected File");
+
+        jButton1.setText("Select File");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -76,57 +154,195 @@ public class ProjectFrm extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(40, 40, 40)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(projectTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 278, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(54, 54, 54)
-                                .addComponent(jButton1)))
+                        .addComponent(sendBroadcast)
                         .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 279, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel1))))
-                .addContainerGap(34, Short.MAX_VALUE))
+                        .addComponent(sendSoloBtn, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(projectTitle, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                        .addComponent(jScrollPane1)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 293, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createSequentialGroup()
+                            .addComponent(jToggleButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGap(36, 36, 36)
+                            .addComponent(jButton2, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 76, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addGap(51, 51, 51)
+                        .addComponent(nameLabel)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(34, 34, 34)
+                        .addComponent(jLabel1)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 14, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jToggleButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jToggleButton2)
+                            .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 183, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addContainerGap(41, Short.MAX_VALUE))))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(61, 61, 61)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jButton1)
+                        .addGap(18, 18, 18)
+                        .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 346, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jToggleButton4))
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(27, 27, 27)
                 .addComponent(projectTitle)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(27, 27, 27)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel1)))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(nameLabel)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(18, 18, 18)
+                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 281, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
-                .addGap(29, 29, 29)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jToggleButton2)
+                        .addGap(18, 18, 18)
+                        .addComponent(jToggleButton1)))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1)
-                    .addComponent(jButton1))
-                .addGap(23, 23, 23)
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 228, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(48, Short.MAX_VALUE))
+                    .addComponent(jToggleButton3)
+                    .addComponent(jButton2)
+                    .addComponent(jButton3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(sendBroadcast)
+                    .addComponent(sendSoloBtn))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 29, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addComponent(jToggleButton4)
+                .addGap(45, 45, 45))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void sendBroadcastActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendBroadcastActionPerformed
         // TODO add your handling code here:
-        String message = sendMessageField.getText();
+        if (!sendMessageField.getText().isEmpty()) {
+            String message = sendMessageField.getText();
+            data = "";
+            data += "5";
+            data += ",";
+            data += projectName;
+            data += ",";
+            data += client.clientName;
+            data += ",";
+            data += client.clientLastName;
+            data += ",";
+            data += message;
+            // 5,pName,clientName,message
+            client.sendDataToServer(data);
+            sendMessageField.setText("");
+        }
+
+
+    }//GEN-LAST:event_sendBroadcastActionPerformed
+
+    private void jToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton1ActionPerformed
+        // TODO add your handling code here:
+//        projectmembersListModel.clear();
         data = "";
-        data += "5";
+        data += "6";
         data += ",";
         data += projectName;
         data += ",";
-        data += message;
-        client.sendDataToSendToTheProjectClients(data);
-        if (client.serverResponse.equals("51")) {
-            System.out.println("send sucessfully");
-        } else if (client.serverResponse.equals("51")) {
-            System.out.println("wrong in sending");
+        data += client.cleintEmail;
+        client.sendDataToServer(data);
+//        String[] responses = client.serverResponse.split(",");
+
+
+    }//GEN-LAST:event_jToggleButton1ActionPerformed
+
+    private void jToggleButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton2ActionPerformed
+;;        // TODO add your handling code here:
+        projeConnectedClientsModel.removeAllElements();
+        data = "";
+        data += "7";
+        data += ",";
+        data += projectName;
+        client.sendDataToServer(data);
+
+
+    }//GEN-LAST:event_jToggleButton2ActionPerformed
+
+    private void jToggleButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jToggleButton3ActionPerformed
+        // TODO add your handling code here:
+        sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDC4D");
+    }//GEN-LAST:event_jToggleButton3ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        // TODO add your handling code here:    
+        sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDE00");
+    }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        // TODO add your handling code here:
+        sendMessageField.setText(sendMessageField.getText() + "\uD83D\uDD25");
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void sendSoloBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendSoloBtnActionPerformed
+        // TODO add your handling code here:
+
+        if (!sendMessageField.getText().isEmpty()) {
+            String message = sendMessageField.getText();
+            String toSend = onlineClients.getSelectedValue();
+            System.out.println(toSend);
+            data = "";
+            data += "9";
+            data += ",";
+            data += projectName;
+            data += ",";
+            data += client.clientName;
+            data += ",";
+            data += client.clientLastName;
+            data += ",";
+            data += toSend;
+            data += ",";
+            data += message;
+            client.sendDataToServer(data);
+            sendMessageField.setText("");
         }
-        sendMessageField.setText("");
+    }//GEN-LAST:event_sendSoloBtnActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        data = "";
+        String filePath = "";
+        File f;
+        JFileChooser j = new JFileChooser();
+        j.showSaveDialog(this);
+        f = j.getSelectedFile();
+        filePath = f.getPath();
+        int fileSize = (int) f.length();
+        fileTextField.setText(filePath);
+        client.sendDataToServer(data);
 
     }//GEN-LAST:event_jButton1ActionPerformed
 
@@ -167,13 +383,24 @@ public class ProjectFrm extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JList<String> comingMessageList;
+    private javax.swing.JTextField fileTextField;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JToggleButton jToggleButton1;
+    private javax.swing.JToggleButton jToggleButton2;
+    private javax.swing.JToggleButton jToggleButton3;
+    private javax.swing.JToggleButton jToggleButton4;
+    private javax.swing.JLabel nameLabel;
     private javax.swing.JList<String> onlineClients;
     private javax.swing.JLabel projectTitle;
+    private javax.swing.JButton sendBroadcast;
     private javax.swing.JTextArea sendMessageField;
+    private javax.swing.JButton sendSoloBtn;
     // End of variables declaration//GEN-END:variables
 }

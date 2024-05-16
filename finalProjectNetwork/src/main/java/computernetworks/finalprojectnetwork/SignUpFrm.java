@@ -22,7 +22,7 @@ public class SignUpFrm extends javax.swing.JFrame {
     public SignUpFrm() {
         initComponents();
         client = SignInFrm.client;
-        
+        Client.signUpFrm = this;
     }
 
     /**
@@ -45,9 +45,11 @@ public class SignUpFrm extends javax.swing.JFrame {
         passwordTxt = new javax.swing.JPasswordField();
         confirmPasswordTxt = new javax.swing.JPasswordField();
         signUpButton = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Sign Up");
+        setLocation(new java.awt.Point(200, 200));
 
         jLabel1.setText("Name");
 
@@ -66,42 +68,50 @@ public class SignUpFrm extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Sign Up Page");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(112, 112, 112)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel2)
-                                .addGap(310, 310, 310))
-                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
-                        .addGap(86, 86, 86))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel4)
-                            .addComponent(jLabel5))
-                        .addGap(46, 46, 46)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(nameTxt, javax.swing.GroupLayout.DEFAULT_SIZE, 193, Short.MAX_VALUE)
-                            .addComponent(lastNameTxt)
-                            .addComponent(emailTxt)
-                            .addComponent(confirmPasswordTxt)
-                            .addComponent(passwordTxt))
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(209, 209, 209)
-                .addComponent(signUpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel2)
+                                        .addGap(285, 285, 285))
+                                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.LEADING))
+                                .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel4)
+                                        .addComponent(jLabel5))
+                                    .addGap(46, 46, 46)
+                                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                        .addComponent(nameTxt)
+                                        .addComponent(lastNameTxt)
+                                        .addComponent(emailTxt)
+                                        .addComponent(confirmPasswordTxt)
+                                        .addComponent(passwordTxt, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(97, 97, 97)
+                                .addComponent(signUpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 151, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(107, 107, 107))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(150, 150, 150)
+                        .addComponent(jLabel6)))
+                .addContainerGap(45, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(90, 90, 90)
+                .addGap(41, 41, 41)
+                .addComponent(jLabel6)
+                .addGap(28, 28, 28)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
                     .addComponent(nameTxt, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -155,24 +165,15 @@ public class SignUpFrm extends javax.swing.JFrame {
             if (!password.equals(confirmPassword)) {
                 JOptionPane.showMessageDialog(this, "confirm password wrong");
             } else {
-                client.sendDataToserverToCreateNewAccount(data);
-                String serverResult = client.serverResponse;
-                if (serverResult.equals("111")) {
-                    SignInFrm signIn = Client.signInFrm;
-                    this.setVisible(false);
-                    signIn.setVisible(true);
-                } else if (serverResult.equals("000")) {
-                    JOptionPane.showMessageDialog(this, "Email is used use new email!!");
-                    
-                }
+                client.sendDataToServer(data);
+
             }
-        }
-
-
     }//GEN-LAST:event_signUpButtonActionPerformed
+    }
 
     /**
      * @param args the command line arguments
+     *
      */
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -214,6 +215,7 @@ public class SignUpFrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField lastNameTxt;
     private javax.swing.JTextField nameTxt;
     private javax.swing.JPasswordField passwordTxt;
