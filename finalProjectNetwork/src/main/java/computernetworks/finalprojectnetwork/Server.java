@@ -8,10 +8,7 @@ import static computernetworks.finalprojectnetwork.Server.connectedClients;
 import static computernetworks.finalprojectnetwork.Server.ipAddress;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -76,7 +73,7 @@ public class Server extends Thread {
                 Socket clientSocket = serverSocket.accept();// blocking
                 String cinfo = clientSocket.getInetAddress().toString() + ":" + clientSocket.getPort();
                 System.out.println("client connected to server ---> " + cinfo);
-                ServerFrm.clientsListModel.addElement(cinfo);
+
                 clientHandler = new ClientHandler(clientSocket, this);
                 clientHandler.start();
 
@@ -117,21 +114,23 @@ class ClientHandler extends Thread {
     // i used mysql datbase (database name cmpy)
     public String url = "jdbc:mysql://localhost:3306/cmpy";
     public String username = "root";
-    public String password = "20142007";
+    public String password = "bashar@Admin20142007";
+//    public String password = "20142007";
 
     // the clientHandletr object should know the server and the 
     ClientHandler(Socket clientSocket, Server server) {
         try {
             this.server = server;
             // the client here will have the same ip and port of the client in the sign in frame
-            client = new Client("localhost", 5000);
-
+            client = new Client("ec2-13-60-82-5.eu-north-1.compute.amazonaws.com", 5000);
+            // aws windows
+//            client = new Client("16.171.14.182", 5000);
             this.client.socket = clientSocket;
 //            System.out.println("-------------------" + client.socket.getPort());
             in = new DataInputStream(client.socket.getInputStream());
             out = new DataOutputStream(client.socket.getOutputStream());
             // add the client to the connected client list in server
-            Server.connectedClients.add(client);
+
         } catch (IOException ex) {
             Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -545,7 +544,7 @@ class ClientHandler extends Thread {
                         this.client.clientName = nameTosend;
                         this.client.clientLastName = lastNameToSend;
                         this.client.cleintEmail = emailToSend;
-
+                        Server.connectedClients.add(client);
                         String respone = "11";
                         respone += "," + nameTosend + "," + lastNameToSend + "," + emailToSend + ",";
                         // this will send the project of all the memebrs when they sign in and add it to the list of My Projects
