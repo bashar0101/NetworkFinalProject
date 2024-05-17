@@ -97,8 +97,6 @@
         <Property name="text" type="java.lang.String" value="Password"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JTextField" name="passwordTxt">
-    </Component>
     <Component class="javax.swing.JTextField" name="emailtxt">
     </Component>
     <Component class="javax.swing.JButton" name="signInBtn">
@@ -125,6 +123,11 @@
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
         <Property name="text" type="java.lang.String" value="Sign In Page"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JPasswordField" name="passwordTxt">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="jPasswordField1"/>
       </Properties>
     </Component>
   </SubComponents>

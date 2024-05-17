@@ -45,12 +45,12 @@ public class SignInFrm extends javax.swing.JFrame {
 
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        passwordTxt = new javax.swing.JTextField();
         emailtxt = new javax.swing.JTextField();
         signInBtn = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
         jLabel4 = new javax.swing.JLabel();
+        passwordTxt = new javax.swing.JPasswordField();
 
         setTitle("Sign In");
         setLocation(new java.awt.Point(100, 100));
@@ -76,6 +76,8 @@ public class SignInFrm extends javax.swing.JFrame {
         });
 
         jLabel4.setText("Sign In Page");
+
+        passwordTxt.setText("jPasswordField1");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -137,7 +139,7 @@ public class SignInFrm extends javax.swing.JFrame {
         data += ",";
         data += emailtxt.getText();
         data += ",";
-        data += passwordTxt.getText();
+        data = new String(passwordTxt.getPassword());
         // we will send the sign in data to server to check if the user is in the DB
         client.sendDataToServer(data);
 
@@ -197,7 +199,7 @@ public class SignInFrm extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
-    private javax.swing.JTextField passwordTxt;
+    private javax.swing.JPasswordField passwordTxt;
     private javax.swing.JButton signInBtn;
     // End of variables declaration//GEN-END:variables
 }
