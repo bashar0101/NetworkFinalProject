@@ -113,6 +113,7 @@ public class Client extends Thread {
                     JOptionPane.showMessageDialog(signUpFrm, "Email is used use new email!!");
 
                 }
+                //create pro
                 if (dataFromServer[0].equals("31")) {
                     project = new Project(dataFromServer[1], client.clientName);
                     String serverKey = dataFromServer[2];
@@ -156,24 +157,29 @@ public class Client extends Thread {
                 if (dataFromServer[0].equals("60")) {
                     JOptionPane.showMessageDialog(projectFrm, "Only Manager of project can see the project members!");
                 }
+                // projetc connected clients
                 if (dataFromServer[0].equals("71")) {
                     for (int i = 1; i < dataFromServer.length; i++) {
                         projeConnectedClientsModel.addElement(dataFromServer[i]);
                     }
                 }
+                // send broad cast message add coming messag to the message list 
                 if (dataFromServer[0].equals("51")) {
                     ProjectFrm.comingMessagesListModel.addElement(dataFromServer[1] + " " + dataFromServer[2] + " : " + dataFromServer[3]);
                 }
+                // send solo message the add coming messag to the message list as solo
                 if (dataFromServer[0].equals("91")) {
                     ProjectFrm.comingMessagesListModel.addElement(dataFromServer[1] + " " + dataFromServer[2] + " : " + dataFromServer[3] + "(Solo message)");
                 }
+                // exit 
                 if (dataFromServer[0].equals("exitAcc")) {
                     mainFrm.setVisible(false);
                     this.disconnect();
                     System.exit(0);
                 }
+                //send file 
                 if (dataFromServer[0].equals("getFile")) {
-                    String destination = "C:\\Users\\basha\\OneDrive\\Desktop\\networkProject\\sendingFile.txt";
+                    String destination = "C:\\Users\\basha\\OneDrive\\Desktop\\networkProject\\comingFile.txt";
                     receiveFile(destination, dataFromServer[1]);
                 }
 

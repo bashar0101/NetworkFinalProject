@@ -115,18 +115,17 @@ class ClientHandler extends Thread {
     public String url = "jdbc:mysql://localhost:3306/cmpy";
     public String username = "root";
     public String password = "bashar@Admin20142007";
-//    public String password = "20142007";
+    //public String password = "20142007";
 
     // the clientHandletr object should know the server and the 
     ClientHandler(Socket clientSocket, Server server) {
         try {
             this.server = server;
             // the client here will have the same ip and port of the client in the sign in frame
-            client = new Client("ec2-13-60-82-5.eu-north-1.compute.amazonaws.com", 5000);
+            client = new Client("13.51.199.107", 5000);
             // aws windows
-//            client = new Client("16.171.14.182", 5000);
+            // client = new Client("16.171.14.182", 5000);
             this.client.socket = clientSocket;
-//            System.out.println("-------------------" + client.socket.getPort());
             in = new DataInputStream(client.socket.getInputStream());
             out = new DataOutputStream(client.socket.getOutputStream());
             // add the client to the connected client list in server
@@ -236,13 +235,6 @@ class ClientHandler extends Thread {
         }
     }
 
-    public void sendFile(String pName, String name, String lastName, String path, String fileContatn) throws IOException {
-        ArrayList<Client> c = getOnlineClientsInProject(pName);
-        for (Client connectedClient : c) {
-            connectedClient.sendFile(fileContatn);
-        }
-    }
-
     public void disconnectClient(String email) {
         for (Client connectedClient : connectedClients) {
             try {
@@ -253,6 +245,13 @@ class ClientHandler extends Thread {
             } catch (IOException ex) {
                 Logger.getLogger(ClientHandler.class.getName()).log(Level.SEVERE, null, ex);
             }
+        }
+    }
+
+    public void sendFile(String pName, String name, String lastName, String path, String fileContatn) throws IOException {
+        ArrayList<Client> c = getOnlineClientsInProject(pName);
+        for (Client connectedClient : c) {
+            connectedClient.sendFile(fileContatn);
         }
     }
 

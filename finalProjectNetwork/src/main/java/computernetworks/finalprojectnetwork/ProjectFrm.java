@@ -401,6 +401,7 @@ public class ProjectFrm extends javax.swing.JFrame {
             String message = sendMessageField.getText();
             String toSend = onlineClients.getSelectedValue();
             System.out.println(toSend);
+            // 9,projectName,clientName,clientLastName,kime,message
             data = "";
             data += "9";
             data += ",";

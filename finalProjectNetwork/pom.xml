@@ -28,7 +28,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>computernetworks.finalprojectnetwork.Server</mainClass>
+                            <mainClass>computernetworks.finalprojectnetwork.SignInFrm</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
